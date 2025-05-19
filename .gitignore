@@ -42,6 +42,13 @@
 *.idb
 *.pdb
 
+# Test
+build/
+*.log
+
+# Editor
+.vscode/
+
 # Kernel Module Compile Results
 *.mod*
 *.cmd
