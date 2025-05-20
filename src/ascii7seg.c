@@ -25,14 +25,38 @@
 
 /* Public API Implementations */
 
-bool Ascii7Seg_ConvertChar( char ascii_char, struct Ascii7Seg_Encoding_S * buf )
+bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 {
+   #ifdef ASCII_7SEG_NUMS_ONLY
 
+   #ifdef DONT_USE_LOOKUP_TABLE
+   
+   #else
+
+   #endif // DONT_USE_LOOKUP_TABLE
+
+   #elif ASCII_7SEG_NUMS_AND_ERR_ONLY
+
+   #ifdef DONT_USE_LOOKUP_TABLE
+   
+   #else
+
+   #endif // DONT_USE_LOOKUP_TABLE
+
+   #else
+
+   #ifdef DONT_USE_LOOKUP_TABLE
+   
+   #else
+
+   #endif // DONT_USE_LOOKUP_TABLE
+
+   #endif // endif for macros that limit range of representable values
 }
 
 bool Ascii7Seg_ConvertWord( const char * str,
                             size_t str_len,
-                            struct Ascii7Seg_Encoding_S * buf )
+                            union Ascii7Seg_Encoding_U * buf )
 {
 
 }
