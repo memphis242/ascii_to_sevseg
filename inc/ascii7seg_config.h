@@ -26,10 +26,24 @@
 //! Uncomment to enforce computation of encoding instead of lookup (to save mem)
 //#define DONT_USE_LOOKUP_TABLE
 
+
+/************* Config Macros to Limit Range *************/
+// NOTE! Only one of the below macros will take effect.
+
+// NOTE! If you did not uncomment any of the below macros, the default range is:
+//          - 0-9
+//          - [, ], _, -, |, =,
+//          - a-z (not every character will be beautiful)
+//          - A-Z (not every character will be beautiful)
+
 //! Uncomment to narrow down the set of characters to convert to only the digits 0-9 (saves space and computation time)
 //#define ASCII_7SEG_NUMS_ONLY
 
+#ifndef ASCII_7SEG_NUMS_ONLY  // Do not remove this #ifndef construct!
+
 //! Uncomment to narrow down the set of characters to convert to only the digits 0-9, E, and r (saves space and computation time)
 //#define ASCII_7SEG_NUMS_AND_ERR_ONLY
+
+#endif // ASCII_7SEG_NUMS_ONLY
 
 #endif // ASCII_7SEG_CFG_H_
