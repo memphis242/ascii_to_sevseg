@@ -46,4 +46,7 @@
 
 #endif // ASCII_7SEG_NUMS_ONLY
 
+//! Uncomment and define your own number to change the maximum length of the string assumed by Ascii7Seg_ConvertWord
+//#define ASCII_7SEG_MAX_WORD_LEN  500
+
 #endif // ASCII_7SEG_CFG_H_
