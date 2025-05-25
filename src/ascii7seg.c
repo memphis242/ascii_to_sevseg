@@ -28,7 +28,7 @@
 bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 {
 
-   if ( (NULL == buf) )
+   if ( NULL == buf )
    {
       return false;
    }
@@ -55,111 +55,22 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 
    static const union Ascii7Seg_Encoding_U NumLUT[] =
    {
-      {  // 0
-         .segments =
-         {
-                  .a = 1,
-            .f = 1,     .b = 1,
-                  .g = 0,
-            .e = 1,     .c = 1,
-                  .d = 1
-         },
-      },
-      {  // 1
-         .segments =
-         {
-                  .a = 0,
-            .f = 0,     .b = 1,
-                  .g = 0,
-            .e = 0,     .c = 1,
-                  .d = 0
-         }
-      },
-      {  // 2
-         .segments =
-         {
-               .a = 1,
-         .f = 0,     .b = 1,
-               .g = 1,
-         .e = 1,     .c = 0,
-               .d = 1
-         }
-      },
-      {  // 3
-         .segments =
-         {
-                  .a = 1,
-            .f = 0,     .b = 1,
-                  .g = 1,
-            .e = 0,     .c = 1,
-                  .d = 1
-         }
-      },
-      {  // 4
-         .segments =
-         {
-                  .a = 0,
-            .f = 1,     .b = 1,
-                  .g = 1,
-            .e = 0,     .c = 1,
-                  .d = 0
-         }
-      },
-      {  // 5
-         .segments =
-         {
-                  .a = 1,
-            .f = 1,     .b = 0,
-                  .g = 1,
-            .e = 0,     .c = 1,
-                  .d = 1
-         }
-      },
-      {  // 6
-         .segments =
-         {
-                  .a = 1,
-            .f = 1,     .b = 0,
-                  .g = 1,
-            .e = 1,     .c = 1,
-                  .d = 1
-         }
-      },
-      {  // 7
-         .segments =
-         {
-                  .a = 1,
-            .f = 0,     .b = 1,
-                  .g = 0,
-            .e = 0,     .c = 1,
-                  .d = 0
-         }
-      },
-      {  // 8
-         .segments =
-         {
-                  .a = 1,
-            .f = 1,     .b = 1,
-                  .g = 1,
-            .e = 1,     .c = 1,
-                  .d = 1
-         }
-      },
-      {  // 9
-         .segments =
-         {
-                  .a = 1,
-            .f = 1,     .b = 1,
-                  .g = 1,
-            .e = 0,     .c = 1,
-                  .d = 1
-         }
-      }
+      {  /* 0 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 } },
+      {  /* 1 */ .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 } },
+      {  /* 2 */ .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 } },
+      {  /* 3 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 1 } },
+      {  /* 4 */ .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 1, .g = 1 } },
+      {  /* 5 */ .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 } },
+      {  /* 6 */ .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 } },
+      {  /* 7 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 } },
+      {  /* 8 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 } },
+      {  /* 9 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 } }
    };
 
    *buf = NumLUT[ ascii_char - '0' ];
 
 #endif // DONT_USE_LOOKUP_TABLE
+
 
 #elif ASCII_7SEG_NUMS_AND_ERR_ONLY // if !ASCII_7SEG_NUMS_ONLY
 
