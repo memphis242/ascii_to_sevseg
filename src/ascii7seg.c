@@ -72,15 +72,67 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 #endif // DONT_USE_LOOKUP_TABLE
 
 
-#elif ASCII_7SEG_NUMS_AND_ERR_ONLY // if !ASCII_7SEG_NUMS_ONLY
+#elif ASCII_7SEG_NUMS_AND_ERROR_ONLY // if !ASCII_7SEG_NUMS_ONLY
+
+   if ( (ascii_char < '0')  ||
+        (
+            (ascii_char > '9') &&   // letters start after the nums in ASCII
+            !(
+               (ascii_char == 'E') || (ascii_char == 'e') ||
+               (ascii_char == 'R') || (ascii_char == 'r') ||
+               (ascii_char == 'O') || (ascii_char == 'o')
+            )
+        )
+      )
+   {
+      // Invalid character
+      return false;
+   }
 
 #ifdef DONT_USE_LOOKUP_TABLE
 
+   buf->segments.a = !( (ascii_char == '1') || (ascii_char == '4') || (ascii_char == 'r') );
+   buf->segments.b = !( (ascii_char == '5') || (ascii_char == '6') || (ascii_char == 'E') || (ascii_char == 'r') );
+   buf->segments.c = !( (ascii_char == '2') || (ascii_char > '9') ); // 'E', 'e', 'R', 'r' are all greater than '9'
+//   buf->segments.d = !( (ascii_char == '1') || (ascii_char == '4') || (ascii_char == '7') );
+//   buf->segments.e =  ( (ascii_char == '0') || (ascii_char == '2') || (ascii_char == '6') || (ascii_char == '8') );
+//   buf->segments.f = !( (ascii_char == '1') || (ascii_char == '2') || (ascii_char == '3') || (ascii_char == '7') );
+//   buf->segments.g = !( (ascii_char == '0') || (ascii_char == '1') || (ascii_char == '7') );
+
 #else
+
+   static const union Ascii7Seg_Encoding_U NumLUT[] =
+   {
+      {  /* 0 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 } },
+      {  /* 1 */ .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 } },
+      {  /* 2 */ .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 } },
+      {  /* 3 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 1 } },
+      {  /* 4 */ .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 1, .g = 1 } },
+      {  /* 5 */ .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 } },
+      {  /* 6 */ .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 } },
+      {  /* 7 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 } },
+      {  /* 8 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 } },
+      {  /* 9 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 } }
+   };
+
+   static const union Ascii7Seg_Encoding_U ErrorLUT[] =
+   {
+      // TODO
+   };
+
+   if ( (ascii_char >= '0') && (ascii_char <= '9') )
+   {
+      *buf = NumLUT[ ascii_char - '0' ];
+   }
+   else
+   {
+      // TODO
+   }
 
 #endif // DONT_USE_LOOKUP_TABLE
 
-#else
+
+#else // Full range of supported characters
 
 #ifdef DONT_USE_LOOKUP_TABLE
 
