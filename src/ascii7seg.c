@@ -27,7 +27,31 @@
 
 bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 {
+
+   if ( (NULL == buf) )
+   {
+      return false;
+   }
+
 #ifdef ASCII_7SEG_NUMS_ONLY
+
+   if ( (ascii_char < '0') || (ascii_char > '9') )
+   {
+      // Invalid character
+      return false;
+   }
+
+#ifdef DONT_USE_LOOKUP_TABLE
+
+   buf->segments.a = !( (ascii_char == '1') || (ascii_char == '4') );
+   buf->segments.b = !( (ascii_char == '5') || (ascii_char == '6') );
+   buf->segments.c = !(  ascii_char == '2');
+   buf->segments.d = !( (ascii_char == '1') || (ascii_char == '4') || (ascii_char == '7') );
+   buf->segments.e =  ( (ascii_char == '0') || (ascii_char == '2') || (ascii_char == '6') || (ascii_char == '8') );
+   buf->segments.f = !( (ascii_char == '1') || (ascii_char == '2') || (ascii_char == '3') || (ascii_char == '7') );
+   buf->segments.g = !( (ascii_char == '0') || (ascii_char == '1') || (ascii_char == '7') );
+
+#else
 
    static const union Ascii7Seg_Encoding_U NumLUT[] =
    {
@@ -133,40 +157,29 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
       }
    };
 
-   if ( (ascii_char < '0') || (ascii_char > '9') )
-   {
-      // Invalid character
-      return false;
-   }
-
    *buf = NumLUT[ ascii_char - '0' ];
+
+#endif // DONT_USE_LOOKUP_TABLE
+
+#elif ASCII_7SEG_NUMS_AND_ERR_ONLY // if !ASCII_7SEG_NUMS_ONLY
+
+#ifdef DONT_USE_LOOKUP_TABLE
+
+#else
+
+#endif // DONT_USE_LOOKUP_TABLE
+
+#else
+
+#ifdef DONT_USE_LOOKUP_TABLE
+
+#else
+
+#endif // DONT_USE_LOOKUP_TABLE
+
+#endif // endif for macros that limit range of representable values
+
    return true;
-
-#endif
-
-   #ifdef DONT_USE_LOOKUP_TABLE
-   
-   #else
-
-   #endif // DONT_USE_LOOKUP_TABLE
-
-   #elif ASCII_7SEG_NUMS_AND_ERR_ONLY
-
-   #ifdef DONT_USE_LOOKUP_TABLE
-   
-   #else
-
-   #endif // DONT_USE_LOOKUP_TABLE
-
-   #else
-
-   #ifdef DONT_USE_LOOKUP_TABLE
-   
-   #else
-
-   #endif // DONT_USE_LOOKUP_TABLE
-
-   #endif // endif for macros that limit range of representable values
 }
 
 bool Ascii7Seg_ConvertWord( const char * str,
