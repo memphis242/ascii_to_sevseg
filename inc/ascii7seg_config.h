@@ -5,7 +5,12 @@
  *
  * By default, the library will be lazy and use a lookup table to perform the
  * encoding and the primary interface datatype Ascii7Seg_Encoding_U will _not_
- * be bitpacked.
+ * be bitpacked. It will also have the following range of valid encodable
+ * characters (aka the Default Encodable Range):
+ *    - 0-9
+ *    - Special Characters: [ ] _ - | =
+ *    - a-z (not every character will be beautiful)
+ *    - A-Z (not every character will be beautiful)
  * 
  * @note Comment/uncomment the macros present here to change which sections of
  *       code are visible to the compiler.
@@ -27,26 +32,20 @@
 //#define DONT_USE_LOOKUP_TABLE
 
 
-/************* Config Macros to Limit Range *************/
+/************************ Config Macros to Limit Range ************************/
 // NOTE! Only one of the below macros will take effect.
-
-// NOTE! If you did not uncomment any of the below macros, the default range is:
-//          - 0-9
-//          - [, ], _, -, |, =,
-//          - a-z (not every character will be beautiful)
-//          - A-Z (not every character will be beautiful)
+// NOTE! If you did not uncomment any of the below macros, the Default Encodable
+//       Range is assumed (see file header comment).
 
 //! Uncomment to narrow down the set of characters to convert to only the digits 0-9 (saves space and computation time)
 //#define ASCII_7SEG_NUMS_ONLY
 
 #ifndef ASCII_7SEG_NUMS_ONLY  // Do not remove this #ifndef construct!
-
 //! Uncomment to narrow down the set of characters to convert to only the digits 0-9, E, and r (saves space and computation time)
-//#define ASCII_7SEG_NUMS_AND_ERR_ONLY
-
+#define ASCII_7SEG_NUMS_AND_ERROR_ONLY
 #endif // ASCII_7SEG_NUMS_ONLY
 
 //! Uncomment and define your own number to change the maximum length of the string assumed by Ascii7Seg_ConvertWord
-//#define ASCII_7SEG_MAX_WORD_LEN  500
+//#define ASCII_7SEG_MAX_WORD_LEN  100
 
 #endif // ASCII_7SEG_CFG_H_
