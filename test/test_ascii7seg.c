@@ -88,7 +88,9 @@ void tearDown(void)
 void test_Ascii7Seg_ConvertChar_ValidChars(void)
 {
    union Ascii7Seg_Encoding_U enc;
-   for (size_t i = 0; i < sizeof(SupportedAsciiCharacters); ++i) {
+
+   for (size_t i = 0; i < sizeof(SupportedAsciiCharacters); ++i)
+   {
 
 #ifdef ASCII_7SEG_NUMS_ONLY
 
@@ -109,14 +111,28 @@ void test_Ascii7Seg_ConvertChar_ValidChars(void)
 
 void test_Ascii7Seg_ConvertChar_InvalidChars(void)
 {
-//   union Ascii7Seg_Encoding_U enc;
-//   // Pick a char not in SupportedAsciiCharacters, e.g. '@'
-//   bool result = Ascii7Seg_ConvertChar('@', &enc);
-//   TEST_ASSERT_FALSE_MESSAGE(result, "Ascii7Seg_ConvertChar should fail for unsupported char");
+   union Ascii7Seg_Encoding_U enc;
+
+#ifdef ASCII_7SEG_NUMS_ONLY
+
+      for ( unsigned int c = 0; c <= UINT8_MAX; c++ )
+      {
+         if ( ((char)c >= '0') && ((char)c <= '9') )  continue;
+         bool result = Ascii7Seg_ConvertChar((char)c, &enc);
+         char msg[60];
+         snprintf( msg, 60, "Ascii7Seg_ConvertChar should fail for unsupported char: %c", (char)c );
+         TEST_ASSERT_FALSE_MESSAGE(result, msg);
+      }
+
+#elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
+
+
+#endif
 }
 
 void test_Ascii7Seg_ConvertChar_NullBuf(void)
 {
+   TEST_ASSERT_TRUE(false);
 //   bool result = Ascii7Seg_ConvertChar('A', NULL);
 //   TEST_ASSERT_FALSE_MESSAGE(result, "Ascii7Seg_ConvertChar should fail if buf is NULL");
 }
@@ -125,6 +141,7 @@ void test_Ascii7Seg_ConvertChar_NullBuf(void)
 
 void test_Ascii7Seg_ConvertWord_ValidString(void)
 {
+   TEST_ASSERT_TRUE(false);
 //   const char *str = "Ab1";
 //   union Ascii7Seg_Encoding_U buf[3];
 //   bool result = Ascii7Seg_ConvertWord(str, 3, buf);
@@ -136,6 +153,7 @@ void test_Ascii7Seg_ConvertWord_ValidString(void)
 
 void test_Ascii7Seg_ConvertWord_InvalidChars(void)
 {
+   TEST_ASSERT_TRUE(false);
 //   const char *str = "A@b";
 //   union Ascii7Seg_Encoding_U buf[3];
 //   bool result = Ascii7Seg_ConvertWord(str, 3, buf);
@@ -144,6 +162,7 @@ void test_Ascii7Seg_ConvertWord_InvalidChars(void)
 
 void test_Ascii7Seg_ConvertWord_NullBuf(void)
 {
+   TEST_ASSERT_TRUE(false);
 //   const char *str = "Ab1";
 //   bool result = Ascii7Seg_ConvertWord(str, 3, NULL);
 //   TEST_ASSERT_FALSE_MESSAGE(result, "Ascii7Seg_ConvertWord should fail if buf is NULL");
@@ -151,6 +170,7 @@ void test_Ascii7Seg_ConvertWord_NullBuf(void)
 
 void test_Ascii7Seg_ConvertWord_NullStr(void)
 {
+   TEST_ASSERT_TRUE(false);
 //   union Ascii7Seg_Encoding_U buf[3];
 //   bool result = Ascii7Seg_ConvertWord(NULL, 3, buf);
 //   TEST_ASSERT_FALSE_MESSAGE(result, "Ascii7Seg_ConvertWord should fail if str is NULL");
@@ -158,6 +178,7 @@ void test_Ascii7Seg_ConvertWord_NullStr(void)
 
 void test_Ascii7Seg_ConvertWord_ZeroLen(void)
 {
+   TEST_ASSERT_TRUE(false);
 //   union Ascii7Seg_Encoding_U buf[1];
 //   bool result = Ascii7Seg_ConvertWord("A", 0, buf);
 //   TEST_ASSERT_FALSE_MESSAGE(result, "Ascii7Seg_ConvertWord should fail if str_len is zero");
