@@ -42,10 +42,7 @@
 
 #ifndef ASCII_7SEG_NUMS_ONLY  // Do not remove this #ifndef construct!
 //! Uncomment to narrow down the set of characters to convert to only the digits 0-9, E, and r (saves space and computation time)
-#define ASCII_7SEG_NUMS_AND_ERROR_ONLY
+//#define ASCII_7SEG_NUMS_AND_ERROR_ONLY
 #endif // ASCII_7SEG_NUMS_ONLY
-
-//! Uncomment and define your own number to change the maximum length of the string assumed by Ascii7Seg_ConvertWord
-//#define ASCII_7SEG_MAX_WORD_LEN  100
 
 #endif // ASCII_7SEG_CFG_H_
