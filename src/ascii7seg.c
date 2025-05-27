@@ -174,13 +174,9 @@ bool Ascii7Seg_ConvertWord( const char * str,
       return false;
    }
 
-#ifndef ASCII_7SEG_MAX_WORD_LEN
-#define ASCII_7SEG_MAX_WORD_LEN 100
-#endif
-
    bool word_converted = false;
    unsigned int iterations = 0;
-   while ( (str[iterations] != '\0') && (iterations < ASCII_7SEG_MAX_WORD_LEN) )
+   while ( (str[iterations] != '\0') && (iterations < str_len) )
    {
       word_converted = Ascii7Seg_ConvertChar( str[iterations],
                                               &buf[iterations] );

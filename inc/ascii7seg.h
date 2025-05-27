@@ -110,9 +110,9 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf );
  * 
  * @note This function converts encodes each character in the string, one at a
  *       time, until it fails to encode a character or reaches the end of the
- *       string or ASCII_7SEG_MAX_WORD_LEN characters. This also means that if
- *       there is at least one valid character and ASCII_7SEG_MAX_WORD_LEN is
- *       > 1, buf is mutated!
+ *       string or str_len characters.
+ * @note This also means that if there is at least one valid character and
+ *       str_len is > 1, buf is mutated!
  *
  * @param[in]  str      Pointer to the input ASCII string.
  * @param[in]  str_len  Length of the input string to convert.
