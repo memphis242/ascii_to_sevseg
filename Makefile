@@ -61,7 +61,7 @@ HDR_FILES = $(wildcard $(PATH_INC)*.h)
 SRC_TEST_FILES = $(wildcard $(PATH_TEST_FILES)*.c)
 LIB_FILE = $(PATH_BUILD)lib$(LIB_NAME).$(STATIC_LIB_EXTENSION)
 LIB_OBJ_FILES = $(patsubst %.c, $(PATH_OBJECT_FILES)%.o, $(notdir $(SRC_FILES)))
-TEST_EXECUTABLES = $(PATH_BUILD)test_ascii7seg.$(TARGET_EXTENSION)
+TEST_EXECUTABLES = $(PATH_BUILD)test_$(LIB_NAME).$(TARGET_EXTENSION)
 LIB_LIST_FILE = $(patsubst %.$(STATIC_LIB_EXTENSION), $(PATH_BUILD)%.lst, $(notdir $(LIB_FILE)))
 TEST_LIST_FILE = $(patsubst %.$(TARGET_EXTENSION), $(PATH_BUILD)%.lst, $(notdir $(TEST_EXECUTABLES)))
 TEST_OBJ_FILES = $(patsubst %.c, $(PATH_OBJECT_FILES)%.o, $(notdir $(SRC_TEST_FILES)))
@@ -150,7 +150,6 @@ endif
 # Compile up linker flags
 LDFLAGS += $(DIAGNOSTIC_FLAGS)
 
-
 ############################# The Rules & Recipes ##############################
 
 ######################### Lib Rules ########################
@@ -189,7 +188,7 @@ $(PATH_RESULTS)%.txt: $(PATH_BUILD)%.$(TARGET_EXTENSION) $(COLORIZE_UNITY_SCRIPT
 $(PATH_BUILD)%.$(TARGET_EXTENSION): $(TEST_OBJ_FILES) $(UNITY_OBJ_FILES) $(LIB_FILE)
 	@echo
 	@echo "----------------------------------------"
-	@echo -e "\033[36mLinking\033[0m $(TEST_OBJ_FILES), $(UNITY_OBJ_FILES), and the collection static lib $(LIB_FILE) into an executable..."
+	@echo -e "\033[36mLinking\033[0m $(TEST_OBJ_FILES), $(UNITY_OBJ_FILES), and the static lib $(LIB_FILE) into an executable..."
 	@echo
 	$(CC) $(LDFLAGS) $(TEST_OBJ_FILES) $(UNITY_OBJ_FILES) -L$(PATH_BUILD) -l$(basename $(notdir $(LIB_FILE))) -o $@
 
@@ -219,11 +218,11 @@ unity_static_analysis: $(PATH_UNITY)unity.c $(COLORIZE_CPPCHECK_SCRIPT)
 
 ######################### Generic ##########################
 
-# Compile the collection source file into an object file
+# Compile the primary source file into an object file
 $(PATH_OBJECT_FILES)%.o : $(PATH_SRC)%.c $(PATH_INC)%.h $(COLORIZE_CPPCHECK_SCRIPT)
 	@echo
 	@echo "----------------------------------------"
-	@echo -e "\033[36mCompiling\033[0m the collection source file: $<..."
+	@echo -e "\033[36mCompiling\033[0m the primary source file: $<..."
 	@echo
 	$(CC) -c $(CFLAGS) $< -o $@
 	@echo
