@@ -58,14 +58,16 @@ LIB_NAME = ascii7seg
 # Relevant files
 SRC_FILES = $(wildcard $(PATH_SRC)*.c)
 HDR_FILES = $(wildcard $(PATH_INC)*.h)
-SRC_TEST_FILES = $(patsubst %.c, $(PATH_TEST_FILES)test_%.c, $(notdir $(SRC_FILES)))
+SRC_TEST_FILES = $(wildcard $(PATH_TEST_FILES)*.c)
 LIB_FILE = $(PATH_BUILD)lib$(LIB_NAME).$(STATIC_LIB_EXTENSION)
 LIB_OBJ_FILES = $(patsubst %.c, $(PATH_OBJECT_FILES)%.o, $(notdir $(SRC_FILES)))
-TEST_EXECUTABLES = $(patsubst %.c, $(PATH_BUILD)%.$(TARGET_EXTENSION), $(notdir $(SRC_TEST_FILES)))
+TEST_EXECUTABLES = $(PATH_BUILD)test_ascii7seg.$(TARGET_EXTENSION)
 LIB_LIST_FILE = $(patsubst %.$(STATIC_LIB_EXTENSION), $(PATH_BUILD)%.lst, $(notdir $(LIB_FILE)))
 TEST_LIST_FILE = $(patsubst %.$(TARGET_EXTENSION), $(PATH_BUILD)%.lst, $(notdir $(TEST_EXECUTABLES)))
 TEST_OBJ_FILES = $(patsubst %.c, $(PATH_OBJECT_FILES)%.o, $(notdir $(SRC_TEST_FILES)))
 RESULTS = $(patsubst %.c, $(PATH_RESULTS)%.txt, $(notdir $(SRC_TEST_FILES)))
+
+$(info $(TEST_EXECUTABLES))
 
 BUILD_TYPE ?= RELEASE
 
@@ -117,7 +119,7 @@ COMPILER_OPTIMIZATION_LEVEL_SPEED = -O3
 COMPILER_OPTIMIZATION_LEVEL_SPACE = -Os
 COMPILER_STANDARD = -std=c99
 INCLUDE_PATHS = -I. -I$(PATH_INC) -I$(PATH_UNITY)
-COMMON_DEFINES =
+COMMON_DEFINES = -DASCII_7SEG_NUMS_ONLY
 DIAGNOSTIC_FLAGS = -fdiagnostics-color
 COMPILER_STATIC_ANALYZER = -fanalyzer
 
@@ -164,7 +166,7 @@ lib: $(BUILD_DIRS) $(LIB_FILE) $(LIB_LIST_FILE)
 	@echo -e "Library \033[35m$(LIB_FILE) \033[32;1mbuilt\033[0m!"
 	@echo "----------------------------------------"
 
-$(LIB_FILE): $(DS_OBJ_FILES) $(BUILD_DIRS) 
+$(LIB_FILE): $(LIB_OBJ_FILES) $(BUILD_DIRS) 
 	@echo
 	@echo "----------------------------------------"
 	@echo -e "\033[36mConstructing\033[0m the static library: $@..."
@@ -260,6 +262,12 @@ $(PATH_BUILD):
 $(PATH_PROFILE):
 	$(MKDIR) $@
 
+$(PATH_RELEASE):
+	$(MKDIR) $@
+
+$(PATH_DEBUG):
+	$(MKDIR) $@
+
 # Clean rule to remove generated files
 .PHONY: clean
 clean:
@@ -270,6 +278,12 @@ clean:
 	$(CLEANUP) $(PATH_BUILD)*.lst
 	$(CLEANUP) $(PATH_BUILD)*.log
 	$(CLEANUP) $(PATH_BUILD)*.$(STATIC_LIB_EXTENSION)
+	$(CLEANUP) $(PATH_RELEASE)*.o
+	$(CLEANUP) $(PATH_RELEASE)*.$(TARGET_EXTENSION)
+	$(CLEANUP) $(PATH_RELEASE)*.$(STATIC_LIB_EXTENSION)
+	$(CLEANUP) $(PATH_DEBUG)*.o
+	$(CLEANUP) $(PATH_DEBUG)*.$(TARGET_EXTENSION)
+	$(CLEANUP) $(PATH_DEBUG)*.$(STATIC_LIB_EXTENSION)
 	@echo
 
 .PRECIOUS: $(PATH_BUILD)%.$(TARGET_EXTENSION)
