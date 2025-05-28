@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "unity.h"
 #include "ascii7seg.h"
 #include "ascii7seg_config.h"
@@ -52,6 +53,8 @@ void test_Ascii7Seg_ConvertWord_NullBuf(void);
 void test_Ascii7Seg_ConvertWord_NullStr(void);
 void test_Ascii7Seg_ConvertWord_ZeroLen(void);
 
+bool helper_IsSupportedChar(char c);
+
 /* Meat of the Program */
 
 int main(void)
@@ -83,53 +86,127 @@ void tearDown(void)
    // Do nothing
 }
 
+/********************************** Helpers ***********************************/
+
+bool helper_IsSupportedChar(char c)
+{
+   for ( size_t i = 0; i < sizeof(SupportedAsciiCharacters); i++ )
+   {
+      if ( SupportedAsciiCharacters[i] == c )
+      {
+         return true;
+      }
+   }
+
+   return false;
+}
+
 /**************************** Convert Single Char *****************************/
 
 void test_Ascii7Seg_ConvertChar_ValidChars(void)
 {
    union Ascii7Seg_Encoding_U enc;
-
-   for (size_t i = 0; i < sizeof(SupportedAsciiCharacters); ++i)
-   {
+   bool result;
 
 #ifdef ASCII_7SEG_NUMS_ONLY
 
-      for ( char c = '0'; c <= '9'; c++ )
-      {
-         bool result = Ascii7Seg_ConvertChar(c, &enc);
-         TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char");
-         TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)c], &enc, sizeof(enc), "Encoding mismatch");
-      }
+   for ( char c = '0'; c <= '9'; c++ )
+   {
+      result = Ascii7Seg_ConvertChar(c, &enc);
+      TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char");
+      TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)c], &enc, sizeof(enc), "Encoding mismatch");
+   }
 
 #elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
 
+   for ( char c = '0'; c <= '9'; c++ )
+   {
+      result = Ascii7Seg_ConvertChar(c, &enc);
+      TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char");
+      TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)c], &enc, sizeof(enc), "Encoding mismatch");
+   }
+
+   result = Ascii7Seg_ConvertChar('E', &enc);
+   TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char: E");
+   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'E'], &enc, sizeof(enc), "Encoding mismatch");
+
+   result = Ascii7Seg_ConvertChar('e', &enc);
+   TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char: e");
+   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'e'], &enc, sizeof(enc), "Encoding mismatch");
+
+   result = Ascii7Seg_ConvertChar('R', &enc);
+   TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char: R");
+   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'R'], &enc, sizeof(enc), "Encoding mismatch");
+
+   result = Ascii7Seg_ConvertChar('r', &enc);
+   TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char: r");
+   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'r'], &enc, sizeof(enc), "Encoding mismatch");
+
+   result = Ascii7Seg_ConvertChar('O', &enc);
+   TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char: O");
+   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'O'], &enc, sizeof(enc), "Encoding mismatch");
+
+   result = Ascii7Seg_ConvertChar('o', &enc);
+   TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char: o");
+   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'o'], &enc, sizeof(enc), "Encoding mismatch");
+
 #else
+
+   for ( uint16_t c = 0; c < sizeof(SupportedAsciiCharacters); c++ )
+   {
+      result = Ascii7Seg_ConvertChar(c, &enc);
+      char err_msg[70];
+      (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should succeed for valid char: %c", c );
+      TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
+      TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)c], &enc, sizeof(enc), "Encoding mismatch");
+   }
 
 #endif
 
-   }
 }
 
 void test_Ascii7Seg_ConvertChar_InvalidChars(void)
 {
    union Ascii7Seg_Encoding_U enc;
 
+   for ( unsigned int c = 0; c <= UINT8_MAX; c++ )
+   {
+
 #ifdef ASCII_7SEG_NUMS_ONLY
 
-      for ( unsigned int c = 0; c <= UINT8_MAX; c++ )
-      {
-         if ( ((char)c >= '0') && ((char)c <= '9') )  continue;
-         bool result = Ascii7Seg_ConvertChar((char)c, &enc);
-         char msg[60];
-         snprintf( msg, 60, "Ascii7Seg_ConvertChar should fail for unsupported char: %c", (char)c );
-         TEST_ASSERT_FALSE_MESSAGE(result, msg);
-      }
+      if ( ((char)c >= '0') && ((char)c <= '9') )  continue;
+      bool result = Ascii7Seg_ConvertChar((char)c, &enc);
+      char msg[60];
+      snprintf( msg, 60, "Ascii7Seg_ConvertChar should fail for unsupported char: %c", (char)c );
+      TEST_ASSERT_FALSE_MESSAGE(result, msg);
 
 #elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
 
+      if ( ( ((char)c >= '0') && ((char)c <= '9') ) ||
+            (tolower((int)c) == 'e') || (tolower((int)c) == 'r') || (tolower((int)c) == 'o') )
+      {
+         continue;
+      }
+      bool result = Ascii7Seg_ConvertChar((char)c, &enc);
+      char msg[60];
+      snprintf( msg, 60, "Ascii7Seg_ConvertChar should fail for unsupported char: %c", (char)c );
+      TEST_ASSERT_FALSE_MESSAGE(result, msg);
+
 #else
 
+      if ( helper_IsSupportedChar((char)c) )
+      {
+         continue;
+      }
+      bool result = Ascii7Seg_ConvertChar((char)c, &enc);
+      char msg[60];
+      snprintf( msg, 60, "Ascii7Seg_ConvertChar should fail for unsupported char: %c", (char)c );
+      TEST_ASSERT_FALSE_MESSAGE(result, msg);
+
 #endif
+
+   }
+
 }
 
 void test_Ascii7Seg_ConvertChar_NullBuf(void)
@@ -145,44 +222,61 @@ void test_Ascii7Seg_ConvertWord_ValidString(void)
 {
 
 #ifdef ASCII_7SEG_NUMS_ONLY
+   const char str[] = "123";
+#elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
+   const char str[] = "err123";
+#else
+   const char str[] = "abc123|_-";
+#endif
 
-   const char *str = "123";
-   union Ascii7Seg_Encoding_U buf[3];
-   bool result = Ascii7Seg_ConvertWord(str, 3, buf);
-   char err_msg[60];
-   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should succeed for valid string: %3s", str );
+   union Ascii7Seg_Encoding_U buf[ sizeof(str) ];
+   bool result = Ascii7Seg_ConvertWord(str, sizeof(str), buf);
+   char err_msg[70];
+   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should succeed for valid string: %9s", str );
    TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
-   for (size_t i = 0; i < 3; ++i)
+   for (size_t i = 0; i < sizeof(str); ++i)
    {
       TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)str[i]], &buf[i], sizeof(union Ascii7Seg_Encoding_U));
    }
-
-#elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
-
-#else
-
-#endif
-
 }
 
 void test_Ascii7Seg_ConvertWord_InvalidChars(void)
 {
 
 #ifdef ASCII_7SEG_NUMS_ONLY
-
-   const char *str = "12A";
-   union Ascii7Seg_Encoding_U buf[3];
-   bool result = Ascii7Seg_ConvertWord(str, 3, buf);
-   char err_msg[60];
-   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should fail for string /w invalid char(s): %3s", str );
-   TEST_ASSERT_FALSE_MESSAGE(result, err_msg);
-
+   const char * str1 = "A23";
+   const char * str2 = "1B3";
+   const char * str3 = "12_";
+   const char * str4 = "___";
 #elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
-
+   const char * str1 = "!4e";
+   const char * str2 = "1*3";
+   const char * str3 = "12>";
+   const char * str4 = "___";
 #else
-
+   const char * str1 = ",2Z";
+   const char * str2 = "Z,1";
+   const char * str3 = "5K,";
+   const char * str4 = "...";
 #endif
 
+   union Ascii7Seg_Encoding_U buf[3];
+   bool result = Ascii7Seg_ConvertWord(str1, 3, buf);
+   char err_msg[60];
+   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should fail for string /w invalid char(s): %3s", str1 );
+   TEST_ASSERT_FALSE_MESSAGE(result, err_msg);
+
+   result = Ascii7Seg_ConvertWord(str2, 3, buf);
+   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should fail for string /w invalid char(s): %3s", str2 );
+   TEST_ASSERT_FALSE_MESSAGE(result, err_msg);
+
+   result = Ascii7Seg_ConvertWord(str3, 3, buf);
+   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should fail for string /w invalid char(s): %3s", str3 );
+   TEST_ASSERT_FALSE_MESSAGE(result, err_msg);
+
+   result = Ascii7Seg_ConvertWord(str4, 3, buf);
+   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should fail for string /w invalid char(s): %3s", str4 );
+   TEST_ASSERT_FALSE_MESSAGE(result, err_msg);
 }
 
 void test_Ascii7Seg_ConvertWord_NullBuf(void)
@@ -205,4 +299,3 @@ void test_Ascii7Seg_ConvertWord_ZeroLen(void)
    bool result = Ascii7Seg_ConvertWord("A", 0, buf);
    TEST_ASSERT_FALSE_MESSAGE(result, "Ascii7Seg_ConvertWord should fail if str_len is zero");
 }
-
