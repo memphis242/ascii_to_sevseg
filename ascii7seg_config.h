@@ -29,7 +29,7 @@
 //#define ASCII_7SEG_BIT_PACK
 
 //! Uncomment to enforce computation of encoding instead of lookup (to save mem)
-//#define DONT_USE_LOOKUP_TABLE
+//#define ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 
 
 /************************ Config Macros to Limit Range ************************/

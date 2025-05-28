@@ -70,7 +70,7 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 
    assert( (ascii_char >= '0') && (ascii_char <= '9') );
 
-#ifdef DONT_USE_LOOKUP_TABLE
+#ifdef ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 
    buf->segments.a = !( (ascii_char == '1') || (ascii_char == '4') );
    buf->segments.b = !( (ascii_char == '5') || (ascii_char == '6') );
@@ -86,7 +86,7 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 
    *buf = NumLUT[ ascii_char - '0' ];
 
-#endif // DONT_USE_LOOKUP_TABLE
+#endif // ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 
 
 #elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY) // if !ASCII_7SEG_NUMS_ONLY
@@ -111,7 +111,7 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
            (ascii_char == 'R') || (ascii_char == 'r') ||
            (ascii_char == 'O') || (ascii_char == 'o') );
 
-#ifdef DONT_USE_LOOKUP_TABLE
+#ifdef ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 
    buf->segments.a = !( (ascii_char == '1') || (ascii_char == '4') || (ascii_char == 'r') || (ascii_char == 'o') );
    buf->segments.b = !( (ascii_char == '5') || (ascii_char == '6') || (ascii_char == 'E') || (ascii_char == 'r') || (ascii_char == 'o') );
@@ -147,16 +147,16 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
       *buf = NumLUT[ ascii_char - '0' ];
    }
 
-#endif // DONT_USE_LOOKUP_TABLE
+#endif // ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 
 
 #else // Full range of supported characters
 
-#ifdef DONT_USE_LOOKUP_TABLE
+#ifdef ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 
 #else
 
-#endif // DONT_USE_LOOKUP_TABLE
+#endif // ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 
 #endif // endif for macros that limit range of representable values
 
