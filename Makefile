@@ -2,6 +2,61 @@
 
 ################################# The Prelude ##################################
 
+.PHONY: test
+.PHONY: test1
+.PHONY: test2
+.PHONY: test3
+.PHONY: _test
+.PHONY: lib
+.PHONY: release
+.PHONY: unity_static_analysis
+.PHONY: clean
+
+BUILD_TYPE ?= RELEASE
+
+# Target to run a test build for every config combo
+test:
+	@echo "----------------------------------------"
+	@echo -e "Test for \033[35mnumbers only version\033[0m..."
+	@echo "----------------------------------------"
+	@$(MAKE) --always-make BUILD_TYPE=TEST TEST_CATEGORY=NUMS_ONLY _test
+	@echo "----------------------------------------"
+	@echo
+	@echo "----------------------------------------"
+	@echo -e "Test for \033[35mnumbers + 'error' version\033[0m..."
+	@echo "----------------------------------------"
+	@$(MAKE) --always-make BUILD_TYPE=TEST TEST_CATEGORY=NUMS_AND_ERROR_ONLY _test
+	@echo "----------------------------------------"
+	@echo
+	@echo "----------------------------------------"
+	@echo -e "Test for \033[35mcomplete version\033[0m..."
+	@echo "----------------------------------------"
+	@$(MAKE) --always-make BUILD_TYPE=TEST _test
+	@echo "----------------------------------------"
+	@echo
+
+# Targets to run only one config combo.
+# NOTE: If you run testX and then want to run testY, make sure to clean first!
+test1:
+	@echo "----------------------------------------"
+	@echo -e "Test for \033[35mnumbers only version\033[0m..."
+	@echo "----------------------------------------"
+	@$(MAKE) BUILD_TYPE=TEST TEST_CATEGORY=NUMS_ONLY _test
+
+test2:
+	@echo "----------------------------------------"
+	@echo -e "Test for \033[35mnumbers + 'error' version\033[0m..."
+	@echo "----------------------------------------"
+	@$(MAKE) --always-make BUILD_TYPE=TEST TEST_CATEGORY=NUMS_AND_ERROR_ONLY _test
+
+test3:
+	@echo "----------------------------------------"
+	@echo -e "Test for \033[35mcomplete version\033[0m..."
+	@echo "----------------------------------------"
+	@$(MAKE) --always-make BUILD_TYPE=TEST _test
+
+$(info This test run)
+
 CLEANUP = rm -f
 MKDIR = mkdir -p
 TARGET_EXTENSION=exe
@@ -67,8 +122,6 @@ TEST_LIST_FILE = $(patsubst %.$(TARGET_EXTENSION), $(PATH_BUILD)%.lst, $(notdir 
 TEST_OBJ_FILES = $(patsubst %.c, $(PATH_OBJECT_FILES)%.o, $(notdir $(SRC_TEST_FILES)))
 RESULTS = $(patsubst %.$(TARGET_EXTENSION), $(PATH_RESULTS)%.txt, $(notdir $(TEST_EXECUTABLES)))
 
-BUILD_TYPE ?= RELEASE
-
 ifeq ($(BUILD_TYPE), TEST)
   BUILD_DIRS += $(PATH_RESULTS)
 else ifeq ($(BUILD_TYPE), PROFILE)
@@ -118,14 +171,22 @@ COMPILER_OPTIMIZATION_LEVEL_SPACE = -Os
 COMPILER_STANDARD = -std=c99
 INCLUDE_PATHS = -I. -I$(PATH_INC) -I$(PATH_UNITY)
 TEST_DEFINES ?=
-COMMON_DEFINES = -DASCII_7SEG_NUMS_ONLY -DASCII_7SEG_DONT_USE_LOOKUP_TABLE -DASCII_7SEG_BIT_PACK
+
+COMMON_DEFINES =
+ifeq ($(TEST_CATEGORY), NUMS_ONLY)
+  COMMON_DEFINES += -DASCII_7SEG_NUMS_ONLY # -DASCII_7SEG_DONT_USE_LOOKUP_TABLE -DASCII_7SEG_BIT_PACK
+else ifeq ($(TEST_CATEGORY), NUMS_AND_ERROR_ONLY)
+  COMMON_DEFINES += -DASCII_7SEG_NUMS_AND_ERROR_ONLY # -DASCII_7SEG_DONT_USE_LOOKUP_TABLE -DASCII_7SEG_BIT_PACK
+endif
+#COMMON_DEFINES = # -DASCII_7SEG_DONT_USE_LOOKUP_TABLE -DASCII_7SEG_BIT_PACK
+
 DIAGNOSTIC_FLAGS = -fdiagnostics-color
 COMPILER_STATIC_ANALYZER = -fanalyzer
 
 # Compile up the compiler flags
 CFLAGS = $(INCLUDE_PATHS) $(COMMON_DEFINES) \
 			$(DIAGNOSTIC_FLAGS) $(COMPILER_WARNINGS) $(COMPILER_STATIC_ANALYZER) \
-			$(COMPILER_STANDARD) $(COMPILER_OPTIMIZATION_LEVEL_SPEED)
+			$(COMPILER_STANDARD)
 
 CFLAGS_TEST = \
          -DTEST $(COMMON_DEFINES) $(TEST_DEFINES) \
@@ -154,8 +215,6 @@ LDFLAGS += $(DIAGNOSTIC_FLAGS)
 ############################# The Rules & Recipes ##############################
 
 ######################### Lib Rules ########################
-.PHONY: lib
-.PHONY: release
 release: lib
 # Build the static library files
 lib: $(BUILD_DIRS) $(LIB_FILE) $(LIB_LIST_FILE)
@@ -172,8 +231,7 @@ $(LIB_FILE): $(LIB_OBJ_FILES) $(BUILD_DIRS)
 	ar rcs $@ $<
 
 ######################## Test Rules ########################
-.PHONY: test
-test: $(BUILD_DIRS) $(TEST_EXECUTABLES) $(LIB_FILE) $(TEST_LIST_FILE) $(RESULTS)
+_test: $(BUILD_DIRS) $(TEST_EXECUTABLES) $(LIB_FILE) $(TEST_LIST_FILE) $(RESULTS)
 	@echo
 	@echo -e "\033[36mAll tests completed!\033[0m"
 	@echo
@@ -209,7 +267,6 @@ $(PATH_OBJECT_FILES)%.o: $(PATH_UNITY)%.c $(PATH_UNITY)%.h
 	$(CC) -c $(CFLAGS_TEST) $< -o $@
 	@echo
 
-.PHONY: unity_static_analysis
 unity_static_analysis: $(PATH_UNITY)unity.c $(COLORIZE_CPPCHECK_SCRIPT)
 	@echo
 	@echo "----------------------------------------"
@@ -267,7 +324,6 @@ $(PATH_DEBUG):
 	$(MKDIR) $@
 
 # Clean rule to remove generated files
-.PHONY: clean
 clean:
 	@echo
 	$(CLEANUP) $(PATH_OBJECT_FILES)*.o
