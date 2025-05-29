@@ -154,7 +154,98 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 
 #ifdef ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 
+   // TODO: Add a non-lookup table approach to the full character range support
+
 #else
+
+   const union Ascii7Seg_Encoding_U MasterLUT[ UINT8_MAX ] =
+   {
+      ['0'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+      ['1'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 }, },
+      ['2'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, },
+      ['3'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 1 }, },
+      ['4'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 1, .g = 1 }, },
+      ['5'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+      ['6'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+      ['7'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 }, },
+      ['8'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+      ['9'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+      ['['] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+      [']'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 0 }, },
+      ['_'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 0, .f = 0, .g = 0 }, },
+      ['-'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 0, .e = 0, .f = 0, .g = 1 }, },
+      ['|'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 }, },
+      ['='] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 0, .f = 0, .g = 1 }, },
+      ['>'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 0, .f = 0, .g = 1 }, },
+      ['<'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, },
+      ['a'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 0, .g = 1 }, },
+      ['b'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+      ['c'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, },
+      ['d'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 1, .f = 0, .g = 1 }, },
+      ['e'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+      ['f'] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+      ['g'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+      ['h'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+      ['i'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 0, .e = 1, .f = 0, .g = 0 }, },
+      ['j'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 0 }, },
+      ['k'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+      ['l'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 0, .e = 1, .f = 1, .g = 0 }, },
+      ['m'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 0, .e = 1, .f = 0, .g = 0 }, },
+      ['n'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 0, .e = 1, .f = 0, .g = 1 }, },
+      ['o'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 1, .f = 0, .g = 1 }, },
+      ['p'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+      ['q'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+      ['r'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 0, .e = 1, .f = 0, .g = 1 }, },
+      ['s'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+      ['t'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+      ['u'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 1, .f = 0, .g = 0 }, },
+      ['v'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 1, .f = 0, .g = 0 }, },
+      ['w'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 1, .f = 0, .g = 0 }, },
+      ['x'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+      ['y'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+      ['z'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, },
+      ['A'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+      ['B'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+      ['C'] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+      ['D'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+      ['E'] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+      ['F'] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+      ['G'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+      ['H'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+      ['I'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 }, },
+      ['J'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 0 }, },
+      ['K'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+      ['L'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+      ['M'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 0, .e = 1, .f = 0, .g = 0 }, },
+      ['N'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 0 }, },
+      ['O'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+      ['P'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+      ['Q'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+      ['R'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 0, .e = 1, .f = 1, .g = 0 }, },
+      ['S'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+      ['T'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+      ['U'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+      ['V'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+      ['W'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 0 }, },
+      ['X'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+      ['Y'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+      ['Z'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, }
+   };
+
+   // Check if character was actually supported
+#ifdef ASCII_7SEG_BIT_PACK
+   if ( MasterLUT[ascii_char].encoding_as_val == 0 )
+#else
+   if ( MasterLUT[ascii_char].segments.a == 0 && MasterLUT[ascii_char].segments.b == 0 && 
+        MasterLUT[ascii_char].segments.c == 0 && MasterLUT[ascii_char].segments.d == 0 &&
+        MasterLUT[ascii_char].segments.e == 0 && MasterLUT[ascii_char].segments.f == 0 &&
+        MasterLUT[ascii_char].segments.g == 0 )
+#endif
+   {
+      return false;
+   }
+
+   *buf = MasterLUT[ascii_char];
 
 #endif // ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 
