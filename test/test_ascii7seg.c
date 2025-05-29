@@ -234,9 +234,14 @@ void test_Ascii7Seg_ConvertWord_ValidString(void)
    char err_msg[70];
    (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should succeed for valid string: %9s", str );
    TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
-   for (size_t i = 0; i < sizeof(str); ++i)
+   for (size_t i = 0; i < sizeof(str) - 1; ++i)
    {
-      TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)str[i]], &buf[i], sizeof(union Ascii7Seg_Encoding_U));
+      (void)snprintf( err_msg, sizeof(err_msg), "%s : %c", str, str[i] );
+      TEST_ASSERT_EQUAL_MEMORY_MESSAGE(
+         &AsciiEncodingReferenceLookup[(uint8_t)str[i]],
+         &buf[i],
+         sizeof(union Ascii7Seg_Encoding_U),
+         err_msg );
    }
 }
 
