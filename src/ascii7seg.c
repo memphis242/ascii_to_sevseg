@@ -128,18 +128,18 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
    NUM_LUT();
    static const union Ascii7Seg_Encoding_U ErrorLUT[] =
    {                                                                                      
-      {  /* e */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 } },
-      {  /* E */ .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 } },
-      {  /* r */ .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 } },
-      {  /* R */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 1 } },
-      {  /* o */ .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 1, .g = 1 } },
-      {  /* O */ .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 } }
+      {  /* e */ .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 1, .g = 1 } },
+      {  /* E */ .segments = { .a = 1, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 1 } },
+      {  /* r */ .segments = { .a = 0, .b = 0, .c = 0, .d = 0, .e = 1, .f = 0, .g = 1 } },
+      {  /* R */ .segments = { .a = 1, .b = 1, .c = 0, .d = 0, .e = 1, .f = 1, .g = 0 } },
+      {  /* o */ .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 1, .f = 0, .g = 1 } },
+      {  /* O */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 } }
    };
 
    if ( ascii_char > '9' )
    {
       // See "Notes for Hashing.txt" file at root of repo
-      uint8_t hash = ((((uint8_t)ascii_char & 0x3) - 1) << 1) + (((uint8_t)ascii_char & 0x20) > 0);
+      uint8_t hash = ((((uint8_t)ascii_char & 0x3) - 1) << 1) + (((uint8_t)ascii_char & 0x20) == 0);
       *buf = ErrorLUT[hash];
    }
    else

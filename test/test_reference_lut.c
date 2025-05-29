@@ -258,7 +258,7 @@ const union Ascii7Seg_Encoding_U AsciiEncodingReferenceLookup[ UINT8_MAX ] =
          .segments =
          {
                .a = 1,
-         .f = 1,     .b = 0,
+         .f = 1,     .b = 1,
                .g = 1,
          .e = 1,     .c = 0,
                .d = 1
@@ -361,6 +361,17 @@ const union Ascii7Seg_Encoding_U AsciiEncodingReferenceLookup[ UINT8_MAX ] =
                .g = 1,
          .e = 1,     .c = 1,
                .d = 0
+         }
+      },
+   ['o'] =
+      {
+         .segments =
+         {
+               .a = 0,
+         .f = 0,     .b = 0,
+               .g = 1,
+         .e = 1,     .c = 1,
+               .d = 1
          }
       },
    ['p'] =
