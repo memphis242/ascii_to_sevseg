@@ -152,13 +152,17 @@ void test_Ascii7Seg_ConvertChar_ValidChars(void)
 
 #else
 
-   for ( uint16_t c = 0; c < sizeof(SupportedAsciiCharacters); c++ )
+   for ( size_t i = 0; i < sizeof(SupportedAsciiCharacters); i++ )
    {
-      result = Ascii7Seg_ConvertChar(c, &enc);
-      char err_msg[70];
-      (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should succeed for valid char: %c", c );
+      result = Ascii7Seg_ConvertChar(SupportedAsciiCharacters[i], &enc);
+      char err_msg[5];
+      (void)snprintf( err_msg, sizeof(err_msg), "%c", SupportedAsciiCharacters[i] );
       TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
-      TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)c], &enc, sizeof(enc), "Encoding mismatch");
+      TEST_ASSERT_EQUAL_MEMORY_MESSAGE(
+         &AsciiEncodingReferenceLookup[ (size_t)SupportedAsciiCharacters[i] ],
+         &enc,
+         sizeof(enc),
+         err_msg );
    }
 
 #endif
@@ -169,7 +173,7 @@ void test_Ascii7Seg_ConvertChar_InvalidChars(void)
 {
    union Ascii7Seg_Encoding_U enc;
 
-   for ( unsigned int c = 0; c <= UINT8_MAX; c++ )
+   for ( int c = CHAR_MIN; c <= CHAR_MAX; c++ )
    {
 
 #ifdef ASCII_7SEG_NUMS_ONLY
