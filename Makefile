@@ -212,6 +212,23 @@ endif
 # Compile up linker flags
 LDFLAGS += $(DIAGNOSTIC_FLAGS)
 
+# CppCheck flags/options
+
+# Explanations for suppressions:
+# 	- unknownEvaluationOrder:
+#	  • CppCheck flagged as an error the following construct in ascii7seg.c:
+# 		   const union Ascii7Seg_Encoding_U MasterLUT[ UINT8_MAX ] =
+#        {
+#           // cppcheck-suppress expressionDependOnOrderOfEvaluation
+#           [(uint8_t)'0'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+#           ...
+#
+#    • This is _not_ an error. There are no internal side-effects being relied
+#		 upon here. I think CppCheck is getting thrown off by the designated initializers.
+CPPCHECK_SUPPRESSIONS = --suppress=unknownEvaluationOrder
+
+CPPCHECK_OPTIONS = --std=c99 --cppcheck-build-dir=$(PATH_BUILD) $(CPPCHECK_SUPPRESSIONS)
+
 ############################# The Rules & Recipes ##############################
 
 ######################### Lib Rules ########################
@@ -272,7 +289,7 @@ unity_static_analysis: $(PATH_UNITY)unity.c $(COLORIZE_CPPCHECK_SCRIPT)
 	@echo "----------------------------------------"
 	@echo -e "\033[36mRunning static analysis\033[0m on $<..."
 	@echo
-	cppcheck --template='{severity}: {file}:{line}: {message}' $< 2>&1 | tee $(PATH_BUILD)cppcheck.log | python $(COLORIZE_CPPCHECK_SCRIPT)
+	cppcheck $(CPPCHECK_OPTIONS) --template='{severity}: {file}:{line}: {message}' $< 2>&1 | tee $(PATH_BUILD)cppcheck.log | python $(COLORIZE_CPPCHECK_SCRIPT)
 
 ######################### Generic ##########################
 
@@ -287,7 +304,7 @@ $(PATH_OBJECT_FILES)%.o : $(PATH_SRC)%.c $(PATH_INC)%.h $(COLORIZE_CPPCHECK_SCRI
 	@echo "----------------------------------------"
 	@echo -e "\033[36mRunning static analysis\033[0m on $<..."
 	@echo
-	cppcheck --template='{severity}: {file}:{line}: {message}' $< 2>&1 | tee $(PATH_BUILD)cppcheck.log | python $(COLORIZE_CPPCHECK_SCRIPT)
+	cppcheck $(CPPCHECK_OPTIONS) --template='{severity}: {file}:{line}: {message}' $< 2>&1 | tee $(PATH_BUILD)cppcheck.log | python $(COLORIZE_CPPCHECK_SCRIPT)
 
 $(LIB_LIST_FILE): $(LIB_FILE)
 	@echo
