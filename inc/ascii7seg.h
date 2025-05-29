@@ -124,6 +124,16 @@ bool Ascii7Seg_ConvertWord( const char * str,
                             size_t str_len,
                             union Ascii7Seg_Encoding_U * buf );
 
+/**
+ * @brief Checks if the given ASCII character is supported by this module.
+ *
+ * Note the macros in ascii7seg_config.h change the answer.
+ *
+ * @param ascii_char The ASCII character to check.
+ * @return true if the character is supported; false otherwise.
+ */
+bool Ascii7Seg_IsSupportedChar( char ascii_char );
+
 
 #ifdef __cplusplus
 }
