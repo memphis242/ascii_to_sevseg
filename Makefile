@@ -47,15 +47,13 @@ test2:
 	@echo "----------------------------------------"
 	@echo -e "Test for \033[35mnumbers + 'error' version\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) --always-make BUILD_TYPE=TEST TEST_CATEGORY=NUMS_AND_ERROR_ONLY _test
+	@$(MAKE) BUILD_TYPE=TEST TEST_CATEGORY=NUMS_AND_ERROR_ONLY _test
 
 test3:
 	@echo "----------------------------------------"
 	@echo -e "Test for \033[35mcomplete version\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) --always-make BUILD_TYPE=TEST _test
-
-$(info This test run)
+	@$(MAKE) BUILD_TYPE=TEST _test
 
 CLEANUP = rm -f
 MKDIR = mkdir -p
