@@ -180,7 +180,7 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
    buf->segments.d = !( (ascii_char == '1') || (ascii_char == '4') || (ascii_char == '7') || (ascii_char == 'R') || (ascii_char == 'r') );
    buf->segments.e =  ( (ascii_char == '0') || (ascii_char == '2') || (ascii_char == '6') || (ascii_char == '8') || (ascii_char > '9') );
    buf->segments.f = !( (ascii_char == '1') || (ascii_char == '2') || (ascii_char == '3') || (ascii_char == '7') || (ascii_char == 'r') || (ascii_char == 'o') );
-   buf->segments.g = !( (ascii_char == '0') || (ascii_char == '1') || (ascii_char == '7') || (ascii_char == 'R') || (ascii_char == 'O') || (ascii_char == 'o') );
+   buf->segments.g = !( (ascii_char == '0') || (ascii_char == '1') || (ascii_char == '7') || (ascii_char == 'R') || (ascii_char == 'O') );
 
 #else // Use a lookup table
 

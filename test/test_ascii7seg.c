@@ -113,14 +113,18 @@ void test_Ascii7Seg_ConvertChar_ValidChars(void)
 {
    union Ascii7Seg_Encoding_U enc;
    bool result;
+   char err_msg[2];
+   err_msg[0] = '\0';
+   err_msg[1] = '\0';
 
 #ifdef ASCII_7SEG_NUMS_ONLY
 
    for ( char c = '0'; c <= '9'; c++ )
    {
       result = Ascii7Seg_ConvertChar(c, &enc);
-      TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char");
-      TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)c], &enc, sizeof(enc), "Encoding mismatch");
+      err_msg[1] = c;
+      TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
+      TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)c], &enc, sizeof(enc), err_msg);
    }
 
 #elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
@@ -128,41 +132,41 @@ void test_Ascii7Seg_ConvertChar_ValidChars(void)
    for ( char c = '0'; c <= '9'; c++ )
    {
       result = Ascii7Seg_ConvertChar(c, &enc);
-      TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char");
-      TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)c], &enc, sizeof(enc), "Encoding mismatch");
+      err_msg[1] = c;
+      TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
+      TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)c], &enc, sizeof(enc), err_msg);
    }
 
    result = Ascii7Seg_ConvertChar('E', &enc);
-   TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char: E");
-   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'E'], &enc, sizeof(enc), "Encoding mismatch");
+   TEST_ASSERT_TRUE_MESSAGE(result, "E");
+   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'E'], &enc, sizeof(enc), "E");
 
    result = Ascii7Seg_ConvertChar('e', &enc);
-   TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char: e");
-   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'e'], &enc, sizeof(enc), "Encoding mismatch");
+   TEST_ASSERT_TRUE_MESSAGE(result, "e");
+   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'e'], &enc, sizeof(enc), "e");
 
    result = Ascii7Seg_ConvertChar('R', &enc);
-   TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char: R");
-   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'R'], &enc, sizeof(enc), "Encoding mismatch");
+   TEST_ASSERT_TRUE_MESSAGE(result, "R");
+   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'R'], &enc, sizeof(enc), "R");
 
    result = Ascii7Seg_ConvertChar('r', &enc);
-   TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char: r");
-   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'r'], &enc, sizeof(enc), "Encoding mismatch");
+   TEST_ASSERT_TRUE_MESSAGE(result, "r");
+   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'r'], &enc, sizeof(enc), "r");
 
    result = Ascii7Seg_ConvertChar('O', &enc);
-   TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char: O");
-   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'O'], &enc, sizeof(enc), "Encoding mismatch");
+   TEST_ASSERT_TRUE_MESSAGE(result, "O");
+   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'O'], &enc, sizeof(enc), "O");
 
    result = Ascii7Seg_ConvertChar('o', &enc);
-   TEST_ASSERT_TRUE_MESSAGE(result, "Ascii7Seg_ConvertChar should succeed for supported char: o");
-   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'o'], &enc, sizeof(enc), "Encoding mismatch");
+   TEST_ASSERT_TRUE_MESSAGE(result, "o");
+   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'o'], &enc, sizeof(enc), "o");
 
 #else
 
    for ( size_t i = 0; i < sizeof(SupportedAsciiCharacters); i++ )
    {
       result = Ascii7Seg_ConvertChar(SupportedAsciiCharacters[i], &enc);
-      char err_msg[5];
-      (void)snprintf( err_msg, sizeof(err_msg), "%c", SupportedAsciiCharacters[i] );
+      err_msg[1] = SupportedAsciiCharacters[i];
       TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
       TEST_ASSERT_EQUAL_MEMORY_MESSAGE(
          &AsciiEncodingReferenceLookup[ (size_t)SupportedAsciiCharacters[i] ],
