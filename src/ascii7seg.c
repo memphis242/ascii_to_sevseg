@@ -158,7 +158,7 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 
 #else
 
-   const union Ascii7Seg_Encoding_U MasterLUT[ UINT8_MAX ] =
+   static const union Ascii7Seg_Encoding_U MasterLUT[ UINT8_MAX ] =
    {
       [(uint8_t)'0'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
       [(uint8_t)'1'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 }, },
@@ -281,4 +281,9 @@ bool Ascii7Seg_ConvertWord( const char * str,
    }
 
    return word_converted;
+}
+
+bool Ascii7Seg_IsSupportedChar( char ascii_char )
+{
+
 }
