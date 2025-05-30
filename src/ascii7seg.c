@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <assert.h>
+#include <ctype.h>
 #include "ascii7seg.h"
 
 /* Local Macro Definitions */
@@ -49,24 +50,100 @@
 
 /* Local Datatypes */
 
+/* Local Data */
+
+#if !defined(ASCII_7SEG_DONT_USE_LOOKUP_TABLE) && !defined(ASCII_7SEG_NUMS_ONLY) && !defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
+
+static const union Ascii7Seg_Encoding_U MasterLUT[ UINT8_MAX ] =
+{
+   [(uint8_t)'0'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+   [(uint8_t)'1'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 }, },
+   [(uint8_t)'2'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, },
+   [(uint8_t)'3'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 1 }, },
+   [(uint8_t)'4'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 1, .g = 1 }, },
+   [(uint8_t)'5'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+   [(uint8_t)'6'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'7'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 }, },
+   [(uint8_t)'8'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'9'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+   [(uint8_t)'['] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+   [(uint8_t)']'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 0 }, },
+   [(uint8_t)'_'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 0, .f = 0, .g = 0 }, },
+   [(uint8_t)'-'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 0, .e = 0, .f = 0, .g = 1 }, },
+   [(uint8_t)'|'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 }, },
+   [(uint8_t)'='] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 0, .f = 0, .g = 1 }, },
+   [(uint8_t)'>'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 0, .f = 0, .g = 1 }, },
+   [(uint8_t)'<'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, },
+   [(uint8_t)'a'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 0, .g = 1 }, },
+   [(uint8_t)'b'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'c'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, },
+   [(uint8_t)'d'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 1, .f = 0, .g = 1 }, },
+   [(uint8_t)'e'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'f'] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'g'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+   [(uint8_t)'h'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'i'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 0, .e = 1, .f = 0, .g = 0 }, },
+   [(uint8_t)'j'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 0 }, },
+   [(uint8_t)'k'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'l'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 0, .e = 1, .f = 1, .g = 0 }, },
+   [(uint8_t)'m'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 0, .e = 1, .f = 0, .g = 0 }, },
+   [(uint8_t)'n'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 0, .e = 1, .f = 0, .g = 1 }, },
+   [(uint8_t)'o'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 1, .f = 0, .g = 1 }, },
+   [(uint8_t)'p'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'q'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+   [(uint8_t)'r'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 0, .e = 1, .f = 0, .g = 1 }, },
+   [(uint8_t)'s'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+   [(uint8_t)'t'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'u'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 1, .f = 0, .g = 0 }, },
+   [(uint8_t)'v'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 1, .f = 0, .g = 0 }, },
+   [(uint8_t)'w'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 0, .e = 1, .f = 0, .g = 0 }, },
+   [(uint8_t)'x'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'y'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+   [(uint8_t)'z'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, },
+   [(uint8_t)'A'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'B'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'C'] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+   [(uint8_t)'D'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+   [(uint8_t)'E'] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'F'] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'G'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'H'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'I'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 }, },
+   [(uint8_t)'J'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 0 }, },
+   [(uint8_t)'K'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'L'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+   [(uint8_t)'M'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 0, .e = 1, .f = 0, .g = 0 }, },
+   [(uint8_t)'N'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 0 }, },
+   [(uint8_t)'O'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+   [(uint8_t)'P'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'Q'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+   [(uint8_t)'R'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 0, .e = 1, .f = 1, .g = 0 }, },
+   [(uint8_t)'S'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+   [(uint8_t)'T'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'U'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+   [(uint8_t)'V'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+   [(uint8_t)'W'] = { .segments = { .a = 0, .b = 1, .c = 0, .d = 1, .e = 0, .f = 1, .g = 0 }, },
+   [(uint8_t)'X'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
+   [(uint8_t)'Y'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+   [(uint8_t)'Z'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, }
+};
+
+#endif
+
 /* Private Function Prototypes */
 
 /* Public API Implementations */
 
+/******************************************************************************/
 bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 {
-   if ( (NULL == buf) || (ascii_char <= 0) )
+   if ( (NULL == buf) || (ascii_char <= 0) ||
+        !Ascii7Seg_IsSupportedChar(ascii_char) )
    {
       return false;
    }
 
 #ifdef ASCII_7SEG_NUMS_ONLY
-
-   if ( (ascii_char < '0') || (ascii_char > '9') )
-   {
-      // Invalid character
-      return false;
-   }
 
    assert( (ascii_char >= '0') && (ascii_char <= '9') );
 
@@ -88,23 +165,7 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 
 #endif // ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 
-
 #elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY) // if !ASCII_7SEG_NUMS_ONLY
-
-   if ( (ascii_char < '0')  ||
-        (
-            (ascii_char > '9') &&   // letters start after the nums in ASCII
-            !(
-               (ascii_char == 'E') || (ascii_char == 'e') ||
-               (ascii_char == 'R') || (ascii_char == 'r') ||
-               (ascii_char == 'O') || (ascii_char == 'o')
-            )
-        )
-      )
-   {
-      // Invalid character
-      return false;
-   }
 
    assert( ( (ascii_char >= '0') && (ascii_char <= '9') ) || 
            (ascii_char == 'E') || (ascii_char == 'e') ||
@@ -158,93 +219,6 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 
 #else
 
-   static const union Ascii7Seg_Encoding_U MasterLUT[ UINT8_MAX ] =
-   {
-      [(uint8_t)'0'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
-      [(uint8_t)'1'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 }, },
-      [(uint8_t)'2'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, },
-      [(uint8_t)'3'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 1 }, },
-      [(uint8_t)'4'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 1, .g = 1 }, },
-      [(uint8_t)'5'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
-      [(uint8_t)'6'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'7'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 }, },
-      [(uint8_t)'8'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'9'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
-      [(uint8_t)'['] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 0 }, },
-      [(uint8_t)']'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 0 }, },
-      [(uint8_t)'_'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 0, .f = 0, .g = 0 }, },
-      [(uint8_t)'-'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 0, .e = 0, .f = 0, .g = 1 }, },
-      [(uint8_t)'|'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 }, },
-      [(uint8_t)'='] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 0, .f = 0, .g = 1 }, },
-      [(uint8_t)'>'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 0, .f = 0, .g = 1 }, },
-      [(uint8_t)'<'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, },
-      [(uint8_t)'a'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 0, .g = 1 }, },
-      [(uint8_t)'b'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'c'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, },
-      [(uint8_t)'d'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 1, .f = 0, .g = 1 }, },
-      [(uint8_t)'e'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'f'] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 0, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'g'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
-      [(uint8_t)'h'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'i'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 0, .e = 1, .f = 0, .g = 0 }, },
-      [(uint8_t)'j'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 0 }, },
-      [(uint8_t)'k'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'l'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 0, .e = 1, .f = 1, .g = 0 }, },
-      [(uint8_t)'m'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 0, .e = 1, .f = 0, .g = 0 }, },
-      [(uint8_t)'n'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 0, .e = 1, .f = 0, .g = 1 }, },
-      [(uint8_t)'o'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 1, .f = 0, .g = 1 }, },
-      [(uint8_t)'p'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 0, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'q'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
-      [(uint8_t)'r'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 0, .e = 1, .f = 0, .g = 1 }, },
-      [(uint8_t)'s'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
-      [(uint8_t)'t'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'u'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 1, .f = 0, .g = 0 }, },
-      [(uint8_t)'v'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 1, .e = 1, .f = 0, .g = 0 }, },
-      [(uint8_t)'w'] = { .segments = { .a = 0, .b = 0, .c = 1, .d = 0, .e = 1, .f = 0, .g = 0 }, },
-      [(uint8_t)'x'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'y'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
-      [(uint8_t)'z'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, },
-      [(uint8_t)'A'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'B'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'C'] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 0 }, },
-      [(uint8_t)'D'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
-      [(uint8_t)'E'] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'F'] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 0, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'G'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'H'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'I'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 }, },
-      [(uint8_t)'J'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 0 }, },
-      [(uint8_t)'K'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'L'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 0 }, },
-      [(uint8_t)'M'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 0, .e = 1, .f = 0, .g = 0 }, },
-      [(uint8_t)'N'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 0 }, },
-      [(uint8_t)'O'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
-      [(uint8_t)'P'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 0, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'Q'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 0, .f = 1, .g = 1 }, },
-      [(uint8_t)'R'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 0, .e = 1, .f = 1, .g = 0 }, },
-      [(uint8_t)'S'] = { .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
-      [(uint8_t)'T'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'U'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
-      [(uint8_t)'V'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
-      [(uint8_t)'W'] = { .segments = { .a = 0, .b = 1, .c = 0, .d = 1, .e = 0, .f = 1, .g = 0 }, },
-      [(uint8_t)'X'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 1, .f = 1, .g = 1 }, },
-      [(uint8_t)'Y'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
-      [(uint8_t)'Z'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, }
-   };
-
-   // Check if character was actually supported
-#ifdef ASCII_7SEG_BIT_PACK
-   if ( MasterLUT[(uint8_t)ascii_char].encoding_as_val == 0 )
-#else
-   if ( MasterLUT[(uint8_t)ascii_char].segments.a == 0 && MasterLUT[(uint8_t)ascii_char].segments.b == 0 && 
-        MasterLUT[(uint8_t)ascii_char].segments.c == 0 && MasterLUT[(uint8_t)ascii_char].segments.d == 0 &&
-        MasterLUT[(uint8_t)ascii_char].segments.e == 0 && MasterLUT[(uint8_t)ascii_char].segments.f == 0 &&
-        MasterLUT[(uint8_t)ascii_char].segments.g == 0 )
-#endif
-   {
-      return false;
-   }
-
    *buf = MasterLUT[(uint8_t)ascii_char];
 
 #endif // ASCII_7SEG_DONT_USE_LOOKUP_TABLE
@@ -255,7 +229,7 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
    return true;
 }
 
-
+/******************************************************************************/
 bool Ascii7Seg_ConvertWord( const char * str,
                             size_t str_len,
                             union Ascii7Seg_Encoding_U * buf )
@@ -283,7 +257,44 @@ bool Ascii7Seg_ConvertWord( const char * str,
    return word_converted;
 }
 
+/******************************************************************************/
 bool Ascii7Seg_IsSupportedChar( char ascii_char )
 {
 
+#ifdef ASCII_7SEG_NUMS_ONLY
+   if ( (ascii_char < '0') || (ascii_char > '9') )
+#elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
+   if ( (ascii_char < '0')  ||
+        (
+            (ascii_char > '9') &&   // letters start after the nums in ASCII
+            !(
+               (ascii_char == 'E') || (ascii_char == 'e') ||
+               (ascii_char == 'R') || (ascii_char == 'r') ||
+               (ascii_char == 'O') || (ascii_char == 'o')
+            )
+        )
+      )
+#else
+#ifdef ASCII_7SEG_DONT_USE_LOOKUP_TABLE
+   if ( !isalnum(ascii_char) &&
+        (ascii_char != '[') && (ascii_char != ']') && (ascii_char != '_') &&
+        (ascii_char != '-') && (ascii_char != '|') && (ascii_char != '=') &&
+        (ascii_char != '>') && (ascii_char != '<') )
+#else // !ASCII_7SEG_DONT_USE_LOOKUP_TABLE
+#ifdef ASCII_7SEG_BIT_PACK
+   if ( MasterLUT[(uint8_t)ascii_char].encoding_as_val == 0 )
+#else
+   if ( MasterLUT[(uint8_t)ascii_char].segments.a == 0 && MasterLUT[(uint8_t)ascii_char].segments.b == 0 && 
+        MasterLUT[(uint8_t)ascii_char].segments.c == 0 && MasterLUT[(uint8_t)ascii_char].segments.d == 0 &&
+        MasterLUT[(uint8_t)ascii_char].segments.e == 0 && MasterLUT[(uint8_t)ascii_char].segments.f == 0 &&
+        MasterLUT[(uint8_t)ascii_char].segments.g == 0 )
+#endif // ASCII_7SEG_BIT_PACK
+#endif // !ASCII_7SEG_DONT_USE_LOOKUP_TABLE
+#endif // ASCII_7SEG_NUMS_ONLY
+
+   {
+      return false;
+   }
+
+   return true;
 }
