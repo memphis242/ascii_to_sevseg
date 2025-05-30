@@ -17,43 +17,73 @@ BUILD_TYPE ?= RELEASE
 # Target to run a test build for every config combo
 test:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mnumbers only version\033[0m..."
+	@echo -e "Test for \033[35mnumbers only version\033[0m /w other defaults..."
 	@echo "----------------------------------------"
-	@$(MAKE) --always-make BUILD_TYPE=TEST TEST_CATEGORY=NUMS_ONLY _test
-	@echo "----------------------------------------"
-	@echo
-	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mnumbers + 'error' version\033[0m..."
-	@echo "----------------------------------------"
-	@$(MAKE) --always-make BUILD_TYPE=TEST TEST_CATEGORY=NUMS_AND_ERROR_ONLY _test
+	@$(MAKE) --always-make BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY _test
 	@echo "----------------------------------------"
 	@echo
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mcomplete version\033[0m..."
+	@echo -e "Test for \033[35mnumbers + 'error' version\033[0m /w other defaults..."
+	@echo "----------------------------------------"
+	@$(MAKE) --always-make BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY _test
+	@echo "----------------------------------------"
+	@echo
+	@echo "----------------------------------------"
+	@echo -e "Test for \033[35mcomplete version\033[0m /w other defaults..."
 	@echo "----------------------------------------"
 	@$(MAKE) --always-make BUILD_TYPE=TEST _test
 	@echo "----------------------------------------"
 	@echo
+	@echo "----------------------------------------"
+	@echo -e "Test for \033[35mnumbers only version\033[0m with \033[34mbit packing\033[0m..."
+	@echo "----------------------------------------"
+	@$(MAKE) --always-make BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY TEST_BIT_PACKING=1 _test
+	@echo "----------------------------------------"
+	@echo -e "Test for \033[35mnumbers + 'error' version\033[0m with \033[34mbit packing\033[0m..."
+	@echo "----------------------------------------"
+	@$(MAKE) --always-make BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY TEST_BIT_PACKING=1 _test
+	@echo "----------------------------------------"
+	@echo -e "Test for \033[35mcomplete version\033[0m with \033[34mbit packing\033[0m..."
+	@echo "----------------------------------------"
+	@$(MAKE) --always-make BUILD_TYPE=TEST TEST_BIT_PACKING=1 _test
 
 # Targets to run only one config combo.
 # NOTE: If you run testX and then want to run testY, make sure to clean first!
 test1:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mnumbers only version\033[0m..."
+	@echo -e "Test for \033[35mnumbers only version\033[0m /w other defaults..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_CATEGORY=NUMS_ONLY _test
+	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY _test
 
 test2:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mnumbers + 'error' version\033[0m..."
+	@echo -e "Test for \033[35mnumbers + 'error' version\033[0m /w other defaults..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_CATEGORY=NUMS_AND_ERROR_ONLY _test
+	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY _test
 
 test3:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mcomplete version\033[0m..."
+	@echo -e "Test for \033[35mcomplete version\033[0m /w other defaults..."
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST _test
+
+test4:
+	@echo "----------------------------------------"
+	@echo -e "Test for \033[35mnumbers only version\033[0m with \033[34mbit packing\033[0m..."
+	@echo "----------------------------------------"
+	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY TEST_BIT_PACKING=1 _test
+
+test5:
+	@echo "----------------------------------------"
+	@echo -e "Test for \033[35mnumbers + 'error' version\033[0m with \033[34mbit packing\033[0m..."
+	@echo "----------------------------------------"
+	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY TEST_BIT_PACKING=1 _test
+
+test6:
+	@echo "----------------------------------------"
+	@echo -e "Test for \033[35mcomplete version\033[0m with \033[34mbit packing\033[0m..."
+	@echo "----------------------------------------"
+	@$(MAKE) BUILD_TYPE=TEST TEST_BIT_PACKING=1 _test
 
 CLEANUP = rm -f
 MKDIR = mkdir -p
@@ -171,10 +201,16 @@ INCLUDE_PATHS = -I. -I$(PATH_INC) -I$(PATH_UNITY)
 TEST_DEFINES ?=
 
 COMMON_DEFINES =
-ifeq ($(TEST_CATEGORY), NUMS_ONLY)
-  COMMON_DEFINES += -DASCII_7SEG_NUMS_ONLY # -DASCII_7SEG_DONT_USE_LOOKUP_TABLE -DASCII_7SEG_BIT_PACK
-else ifeq ($(TEST_CATEGORY), NUMS_AND_ERROR_ONLY)
-  COMMON_DEFINES += -DASCII_7SEG_NUMS_AND_ERROR_ONLY # -DASCII_7SEG_DONT_USE_LOOKUP_TABLE -DASCII_7SEG_BIT_PACK
+ifeq ($(TEST_RANGE), NUMS_ONLY)
+  COMMON_DEFINES += -DASCII_7SEG_NUMS_ONLY
+else ifeq ($(TEST_RANGE), NUMS_AND_ERROR_ONLY)
+  COMMON_DEFINES += -DASCII_7SEG_NUMS_AND_ERROR_ONLY
+endif
+ifdef TEST_BIT_PACKING
+  COMMON_DEFINES += -DASCII_7SEG_BIT_PACK
+endif
+ifdef TEST_NO_LUT
+  COMMON_DEFINES += -DASCII_7SEG_DONT_USE_LOOKUP_TABLE
 endif
 #COMMON_DEFINES = # -DASCII_7SEG_DONT_USE_LOOKUP_TABLE -DASCII_7SEG_BIT_PACK
 
