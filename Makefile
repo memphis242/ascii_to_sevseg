@@ -42,73 +42,73 @@ test:
 # NOTE: If you run testX and then want to run testY, make sure to clean first!
 test1:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mnumbers only version\033[0m /w other defaults..."
+	@echo -e "Test 1: \033[35mnumbers only version\033[0m /w other defaults..."
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY _test
 
 test2:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mnumbers + 'error' version\033[0m /w other defaults..."
+	@echo -e "Test 2: \033[35mnumbers + 'error' version\033[0m /w other defaults..."
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY _test
 
 test3:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mcomplete version\033[0m /w other defaults..."
+	@echo -e "Test 3: \033[35mcomplete version\033[0m /w other defaults..."
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST _test
 
 test4:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mnumbers only version\033[0m /w \033[34mbit packing\033[0m..."
+	@echo -e "Test 4: \033[35mnumbers only version\033[0m /w \033[34mbit packing\033[0m..."
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY TEST_BIT_PACKING=1 _test
 
 test5:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mnumbers + 'error' version\033[0m /w \033[34mbit packing\033[0m..."
+	@echo -e "Test 5: \033[35mnumbers + 'error' version\033[0m /w \033[34mbit packing\033[0m..."
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY TEST_BIT_PACKING=1 _test
 
 test6:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mcomplete version\033[0m /w \033[34mbit packing\033[0m..."
+	@echo -e "Test 6: \033[35mcomplete version\033[0m /w \033[34mbit packing\033[0m..."
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST TEST_BIT_PACKING=1 _test
 
 test7:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mnumbers only version\033[0m \033[34m/wo LUT\033[0m..."
+	@echo -e "Test 7: \033[35mnumbers only version\033[0m \033[34m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY TEST_NO_LUT=1 _test
 
 test8:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mnumbers + 'error' version\033[0m \033[34m/wo LUT\033[0m..."
+	@echo -e "Test 8: \033[35mnumbers + 'error' version\033[0m \033[34m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY TEST_NO_LUT=1 _test
 
 test9:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mcomplete version\033[0m \033[34m/wo LUT\033[0m..."
+	@echo -e "Test 9: \033[35mcomplete version\033[0m \033[34m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST _test
 
 test10:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mnumbers only version\033[0m with \033[34mbit packing\033[0m \033[34m/wo LUT\033[0..."
+	@echo -e "Test 10: \033[35mnumbers only version\033[0m with \033[34mbit packing\033[0m \033[36m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY TEST_BIT_PACKING=1 TEST_NO_LUT=1 _test
 
 test11:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mnumbers + 'error' version\033[0m with \033[34mbit packing\033[0m \033[34m/wo LUT\033[0..."
+	@echo -e "Test 11: \033[35mnumbers + 'error' version\033[0m with \033[34mbit packing\033[0m \033[36m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY TEST_BIT_PACKING=1 TEST_NO_LUT=1 _test
 
 test12:
 	@echo "----------------------------------------"
-	@echo -e "Test for \033[35mcomplete version\033[0m with \033[34mbit packing\033[0m \033[34m/wo LUT\033[0..."
+	@echo -e "Test 12: \033[35mcomplete version\033[0m with \033[34mbit packing\033[0m \033[36m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST TEST_BIT_PACKING=1 TEST_NO_LUT=1 _test
 
