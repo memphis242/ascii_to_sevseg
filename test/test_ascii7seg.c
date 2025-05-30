@@ -122,7 +122,7 @@ void test_Ascii7Seg_ConvertChar_ValidChars(void)
    for ( char c = '0'; c <= '9'; c++ )
    {
       result = Ascii7Seg_ConvertChar(c, &enc);
-      err_msg[1] = c;
+      err_msg[0] = c;
       TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
       TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)c], &enc, sizeof(enc), err_msg);
    }
@@ -132,7 +132,7 @@ void test_Ascii7Seg_ConvertChar_ValidChars(void)
    for ( char c = '0'; c <= '9'; c++ )
    {
       result = Ascii7Seg_ConvertChar(c, &enc);
-      err_msg[1] = c;
+      err_msg[0] = c;
       TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
       TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)c], &enc, sizeof(enc), err_msg);
    }
@@ -166,7 +166,7 @@ void test_Ascii7Seg_ConvertChar_ValidChars(void)
    for ( size_t i = 0; i < sizeof(SupportedAsciiCharacters); i++ )
    {
       result = Ascii7Seg_ConvertChar(SupportedAsciiCharacters[i], &enc);
-      err_msg[1] = SupportedAsciiCharacters[i];
+      err_msg[0] = SupportedAsciiCharacters[i];
       TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
       TEST_ASSERT_EQUAL_MEMORY_MESSAGE(
          &AsciiEncodingReferenceLookup[ (size_t)SupportedAsciiCharacters[i] ],
