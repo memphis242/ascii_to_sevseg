@@ -25,10 +25,10 @@ plt.scatter(x_vals, y_vals)
 
 # Add labels to each point
 for i, txt in enumerate(labels):
-    plt.annotate(txt, (x_vals[i], y_vals[i]), fontsize=8, ha='right', va='bottom')
+    plt.annotate(txt, (x_vals[i], y_vals[i]), fontsize=15, ha='right', va='bottom')
 
-plt.xlabel('First Number')
-plt.ylabel('Second Number')
+plt.xlabel('ASCII Character')
+plt.ylabel('Encoding as a Byte')
 plt.title('ASCII 7-Segment Encodings Scatter Plot')
 plt.grid(True)
 plt.tight_layout()
@@ -44,7 +44,7 @@ for bit in range(7):
     for i, txt in enumerate(labels):
         ax.annotate(txt, (x_vals[i], y_bit[i]), fontsize=7, ha='right', va='bottom')
     ax.set_xlabel('First Number (ASCII code)')
-    ax.set_ylabel(f'Bit {bit}')
+    ax.set_ylabel(f'Bit {bit} of Encoding')
     ax.set_title(f'Bit {bit} of Segment Encoding')
     ax.set_yticks([0, 1])
     ax.grid(True)
