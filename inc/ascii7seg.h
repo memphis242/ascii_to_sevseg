@@ -96,8 +96,8 @@ extern "C" {
  * @brief Converts an ASCII character to its corresponding 7-segment display
  *        encoding.
  *
- * This function takes a single ASCII character as input and encode it into the
- * Ascii7Seg_Encoding_U structure that represent the 7-segment display drive
+ * This function takes a single ASCII character as input and encodes it into the
+ * Ascii7Seg_Encoding_U structure that represents the 7-segment display drive
  * signals required to display the character.
  * 
  * @note Supported Characters (can be limited by the macros in
