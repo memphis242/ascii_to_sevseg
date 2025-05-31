@@ -18,6 +18,7 @@
 .PHONY: _test
 .PHONY: lib
 .PHONY: release
+.PHONY: libmcu
 .PHONY: libarm
 .PHONY: unity_static_analysis
 .PHONY: clean
@@ -113,18 +114,21 @@ test12:
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST BIT_PACK=1 NO_LUT=1 _test
 
+libmcu:
+	@$(MAKE) libarm
+
 libarm:
-	@$(MAKE) libarm-pack MCU=1
+	@$(MAKE) libarm-pack
 
 libarm-pack:
 	@echo "----------------------------------------"
 	@echo -e "Building for an \033[35mARM target\033[0m..."
-	$(MAKE) lib CROSS=arm-none-eabi- BIT_PACK=1 MCU=1
+	$(MAKE) lib CROSS=arm-none-eabi- BIT_PACK=1
 
 libarm-lazy:
 	@echo "----------------------------------------"
 	@echo -e "Building for an \033[35mARM target\033[0m..."
-	$(MAKE) lib CROSS=arm-none-eabi- MCU=1
+	$(MAKE) lib CROSS=arm-none-eabi-
 
 CLEANUP = rm -f
 MKDIR = mkdir -p
@@ -150,9 +154,9 @@ else
 endif
 
 # Override for cross-compiling the build artifact extensions...
-ifdef MCU
-  TARGET_EXTENSION = hex
-  STATIC_LIB_EXTENSION = a
+ifneq ($(strip $(CROSS)),)
+  TARGET_EXTENSION ?= hex
+  STATIC_LIB_EXTENSION ?= a
 endif
 
 # Relevant paths
@@ -204,9 +208,8 @@ endif
 CROSS =
 CC = $(CROSS)gcc
 
-ifdef MCU
-  CC_ARM_OPTS = -mcpu=cortex-m0plus -mfloat-abi=soft -mthumb
-  MCU_OPTS = --specs=nosys.specs -static --specs=nano.specs -fstack-usage
+ifneq ($(strip $(CROSS)),)
+  include mcu_opts.mk
 endif
 
 COMPILER_WARNINGS = \
@@ -292,13 +295,13 @@ else
 CFLAGS += $(COMPILER_SANITIZERS) $(COMPILER_OPTIMIZATION_LEVEL_DEBUG)
 endif
 
-ifdef MCU
+ifneq ($(strip $(CROSS)),)
   CFLAGS += $(CC_ARM_OPTS) $(MCU_OPTS)
 endif
 
 # Compile up linker flags
 LDFLAGS += $(DIAGNOSTIC_FLAGS)
-ifdef MCU
+ifneq ($(strip $(CROSS)),)
   LDFLAGS += -Wl,--start-group -lc -lm -Wl,-Wl,--gc-sections,-Wl,-Map--end-group
 endif
 

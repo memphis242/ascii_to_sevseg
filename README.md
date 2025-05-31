@@ -1,4 +1,4 @@
-# ASCII to 7-Segment Library `libascii7seg`
+# ASCII to 7-Segment Library `libascii7seg` :capital_abcd: :1234:
 This library provides a small API to encode a range of supported ASCII characters into the individual segment values to drive a 7 segment display. This can be used in pretty much any environment and is written conforming to C99.  
 
 See [`ascii7seg.h`](./inc/ascii7seg.h) for the types and API, but to repeat them briefly here, the primary type you'll work with is `Ascii7Seg_Encoding_U` (a union type), which will give you the individual segment values or the entire encoding as a single variable (hence the union type), and the following API is available to you (you pass in the union object, the functions return a pass/fail):   
@@ -22,9 +22,10 @@ You'd simply set the macros as you like and then rebuild the library for your ar
 
 ## Usage
 In the near future, I will place the various build artifacts produced here into a package and publish that to some package management system, but for now, you may:
-1. **Download** the static library file for your target in the [**Releases**](https://github.com/memphis242/ascii7seg/releases) page of this repository.
+1. **Download** the static library file for your target in the [**Releases**](https://github.com/memphis242/ascii7seg/releases) page of this repository. I try to include as many possible target environments as I can there, but this is not exhaustive.
 
-2. **Build the Static Library Yourself**: Clone this repo and run `make lib` if you are building for a desktop environment or `make libmcu CC_ARM_OPTS=<specify -mzzz options>` to build for an MCU target. Presently, only ARM-based MCUs are supported, but you may also just copy the necessary files into your own build environment and click away.
+2. **Build the Static Library Yourself**: Clone this repo and run `make lib` if you are building for a desktop environment or `make libmcu` to build for an MCU target (you'll need to configure [`mcu_opts.mk`](./mcu_opts.mk)) to build correctly for your desired target.
+   - Presently, only ARM-based MCUs are supported, but you may also just copy the necessary files into your own build environment and click away.
    - You'll need GCC to build for a desktop environment and the [Arm GNU Toolchain](https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain) to build for the ARM MCU targets.
    - Make
    - Additionally, to utilize the full build process I am using, you'll need:
