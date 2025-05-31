@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include "ascii7seg.h"
+#include "ascii7seg_config.h"
 
 /* Local Macro Definitions */
 
