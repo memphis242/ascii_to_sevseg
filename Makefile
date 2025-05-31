@@ -64,31 +64,31 @@ test4:
 	@echo "----------------------------------------"
 	@echo -e "Test 4: \033[35mnumbers only version\033[0m /w \033[34mbit packing\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY TEST_BIT_PACKING=1 _test
+	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY BIT_PACK=1 _test
 
 test5:
 	@echo "----------------------------------------"
 	@echo -e "Test 5: \033[35mnumbers + 'error' version\033[0m /w \033[34mbit packing\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY TEST_BIT_PACKING=1 _test
+	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 _test
 
 test6:
 	@echo "----------------------------------------"
 	@echo -e "Test 6: \033[35mcomplete version\033[0m /w \033[34mbit packing\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_BIT_PACKING=1 _test
+	@$(MAKE) BUILD_TYPE=TEST BIT_PACK=1 _test
 
 test7:
 	@echo "----------------------------------------"
 	@echo -e "Test 7: \033[35mnumbers only version\033[0m \033[34m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY TEST_NO_LUT=1 _test
+	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY NO_LUT=1 _test
 
 test8:
 	@echo "----------------------------------------"
 	@echo -e "Test 8: \033[35mnumbers + 'error' version\033[0m \033[34m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY TEST_NO_LUT=1 _test
+	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY NO_LUT=1 _test
 
 test9:
 	@echo "----------------------------------------"
@@ -100,31 +100,39 @@ test10:
 	@echo "----------------------------------------"
 	@echo -e "Test 10: \033[35mnumbers only version\033[0m with \033[34mbit packing\033[0m \033[36m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY TEST_BIT_PACKING=1 TEST_NO_LUT=1 _test
+	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY BIT_PACK=1 NO_LUT=1 _test
 
 test11:
 	@echo "----------------------------------------"
 	@echo -e "Test 11: \033[35mnumbers + 'error' version\033[0m with \033[34mbit packing\033[0m \033[36m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY TEST_BIT_PACKING=1 TEST_NO_LUT=1 _test
+	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 NO_LUT=1 _test
 
 test12:
 	@echo "----------------------------------------"
 	@echo -e "Test 12: \033[35mcomplete version\033[0m with \033[34mbit packing\033[0m \033[36m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_BIT_PACKING=1 TEST_NO_LUT=1 _test
+	@$(MAKE) BUILD_TYPE=TEST BIT_PACK=1 NO_LUT=1 _test
 
 libarm:
+	@$(MAKE) libarm-pack
+
+libarm-pack:
 	@echo "----------------------------------------"
-	@echo -e "Building for an ARM target..."
-	@$(MAKE) lib CROSS=arm-none-eabi-
+	@echo -e "Building for an \033[35mARM target\033[0m..."
+	$(MAKE) lib CROSS=arm-none-eabi- BIT_PACK=1
+
+libarm-lazy:
+	@echo "----------------------------------------"
+	@echo -e "Building for an \033[35mARM target\033[0m..."
+	$(MAKE) lib CROSS=arm-none-eabi-
 
 CLEANUP = rm -f
 MKDIR = mkdir -p
 TARGET_EXTENSION=exe
+
 # Set the OS-specific tool cmds / executable extensions
 ifeq ($(OS),Windows_NT)
-
   TARGET_EXTENSION = exe
   STATIC_LIB_EXTENSION = lib
 
@@ -135,14 +143,17 @@ ifeq ($(OS),Windows_NT)
     CLEANUP = rm -f
     MKDIR = mkdir -p
   endif
-
 else
-
   TARGET_EXTENSION = out
   STATIC_LIB_EXTENSION = a
   CLEANUP = rm -f
   MKDIR = mkdir -p
+endif
 
+# Override for cross-compiling the build artifact extensions...
+ifneq ($(CROSS), "")
+  TARGET_EXTENSION = hex
+  STATIC_LIB_EXTENSION = a
 endif
 
 # Relevant paths
@@ -194,6 +205,9 @@ endif
 CROSS	= 
 CC = $(CROSS)gcc
 
+CC_ARM_OPTS = -mcpu=cortex-m0plus -mfloat-abi=soft -mthumb
+MCU_OPTS = --specs=nosys.specs -static --specs=nano.specs -fstack-usage
+
 COMPILER_WARNINGS = \
     -Wall -Wextra -Wpedantic -pedantic-errors \
     -Wconversion -Wdouble-promotion -Wnull-dereference \
@@ -240,10 +254,10 @@ ifeq ($(TEST_RANGE), NUMS_ONLY)
 else ifeq ($(TEST_RANGE), NUMS_AND_ERROR_ONLY)
   COMMON_DEFINES += -DASCII_7SEG_NUMS_AND_ERROR_ONLY
 endif
-ifdef TEST_BIT_PACKING
+ifdef BIT_PACK
   COMMON_DEFINES += -DASCII_7SEG_BIT_PACK
 endif
-ifdef TEST_NO_LUT
+ifdef NO_LUT
   COMMON_DEFINES += -DASCII_7SEG_DONT_USE_LOOKUP_TABLE
 endif
 #COMMON_DEFINES = # -DASCII_7SEG_DONT_USE_LOOKUP_TABLE -DASCII_7SEG_BIT_PACK
@@ -277,8 +291,15 @@ else
 CFLAGS += $(COMPILER_SANITIZERS) $(COMPILER_OPTIMIZATION_LEVEL_DEBUG)
 endif
 
+ifneq ($(CROSS), "")
+  CFLAGS += $(CC_ARM_OPTS) $(MCU_OPTS)
+endif
+
 # Compile up linker flags
-LDFLAGS += $(DIAGNOSTIC_FLAGS)
+LDFLAGS += $(DIAGNOSTIC_FLAGS) -Wl,--gc-sections -Wl,-Map
+ifneq ($(CROSS), "")
+  LDFLAGS += -Wl,--start-group -lc -lm -Wl,--end-group
+endif
 
 # CppCheck flags/options
 
@@ -313,7 +334,7 @@ $(LIB_FILE): $(LIB_OBJ_FILES) $(BUILD_DIRS)
 	@echo "----------------------------------------"
 	@echo -e "\033[36mConstructing\033[0m the static library: $@..."
 	@echo
-	ar rcs $@ $<
+	$(CROSS)ar rcs $@ $<
 
 ######################## Test Rules ########################
 _test: $(BUILD_DIRS) $(TEST_EXECUTABLES) $(LIB_FILE) $(TEST_LIST_FILE) $(RESULTS)
@@ -379,7 +400,11 @@ $(LIB_LIST_FILE): $(LIB_FILE)
 	@echo "----------------------------------------"
 	@echo -e "\033[36mDisassembly\033[0m of $< into $@..."
 	@echo
-	objdump -D $< > $@
+	$(CROSS)objdump -D $< > $@
+	@echo "----------------------------------------"
+	@echo -e "\033[36mAnnotated assembly file\033[0m of $(PATH_SRC)$(LIB_NAME).c into $(PATH_BUILD)$(LIB_NAME).s..."
+	@echo
+	$(CC) -S -fverbose-asm $(CC_ARM_OPTS) $(MCU_OPTS) $(COMPILER_OPTIMIZATION_LEVEL_DEBUG) $(COMPILER_WARNINGS) -fdiagnostics-color $(INCLUDE_PATHS) $(COMMON_DEFINES) -o $(PATH_BUILD)$(LIB_NAME).s $(PATH_SRC)$(LIB_NAME).c > /dev/null 2>&1
 
 # Produces an object dump that includes the disassembly of the executable
 $(PATH_BUILD)%.lst: $(PATH_BUILD)%.$(TARGET_EXTENSION)
@@ -417,12 +442,23 @@ clean:
 	$(CLEANUP) $(PATH_BUILD)*.lst
 	$(CLEANUP) $(PATH_BUILD)*.log
 	$(CLEANUP) $(PATH_BUILD)*.$(STATIC_LIB_EXTENSION)
+	$(CLEANUP) $(PATH_BUILD)*.$(TARGET_EXTENSION)
+	$(CLEANUP) $(PATH_BUILD)*.bin
+	$(CLEANUP) $(PATH_BUILD)*.hex
 	$(CLEANUP) $(PATH_RELEASE)*.o
 	$(CLEANUP) $(PATH_RELEASE)*.$(TARGET_EXTENSION)
 	$(CLEANUP) $(PATH_RELEASE)*.$(STATIC_LIB_EXTENSION)
+	$(CLEANUP) $(PATH_RELEASE)*.bin
+	$(CLEANUP) $(PATH_RELEASE)*.hex
 	$(CLEANUP) $(PATH_DEBUG)*.o
 	$(CLEANUP) $(PATH_DEBUG)*.$(TARGET_EXTENSION)
 	$(CLEANUP) $(PATH_DEBUG)*.$(STATIC_LIB_EXTENSION)
+	$(CLEANUP) $(PATH_DEBUG)*.bin
+	$(CLEANUP) $(PATH_DEBUG)*.hex
+	$(CLEANUP) $(PATH_BUILD)*.su
+	$(CLEANUP) $(PATH_OBJECT_FILES)*.su
+	$(CLEANUP) $(PATH_DEBUG)*.su
+	$(CLEANUP) $(PATH_RELEASE)*.su
 	@echo
 
 .PRECIOUS: $(PATH_BUILD)%.$(TARGET_EXTENSION)
