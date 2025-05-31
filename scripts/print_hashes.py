@@ -10,3 +10,5 @@ except IndexError:
    print("Please provide a command-line argument.")
 except ValueError:
    print("Please enter a valid integer.")
+except ZeroDivisionError:
+   print("Please enter a non-zero integer.")
