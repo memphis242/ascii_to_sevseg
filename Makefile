@@ -18,6 +18,7 @@
 .PHONY: _test
 .PHONY: lib
 .PHONY: release
+.PHONY: libarm
 .PHONY: unity_static_analysis
 .PHONY: clean
 
@@ -37,6 +38,7 @@ test:
 	@$(MAKE) --always-make test10
 	@$(MAKE) --always-make test11
 	@$(MAKE) --always-make test12
+	$(MAKE) release CROSS=arm-none-eabi-
 
 # Targets to run only one config combo.
 # NOTE: If you run testX and then want to run testY, make sure to clean first!
@@ -112,6 +114,10 @@ test12:
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST TEST_BIT_PACKING=1 TEST_NO_LUT=1 _test
 
+libarm:
+	@echo "----------------------------------------"
+	@echo -e "Building for an ARM target..."
+	@$(MAKE) lib CROSS=arm-none-eabi-
 
 CLEANUP = rm -f
 MKDIR = mkdir -p
