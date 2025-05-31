@@ -38,7 +38,6 @@ test:
 	@$(MAKE) --always-make test10
 	@$(MAKE) --always-make test11
 	@$(MAKE) --always-make test12
-	$(MAKE) release CROSS=arm-none-eabi-
 
 # Targets to run only one config combo.
 # NOTE: If you run testX and then want to run testY, make sure to clean first!
@@ -115,17 +114,17 @@ test12:
 	@$(MAKE) BUILD_TYPE=TEST BIT_PACK=1 NO_LUT=1 _test
 
 libarm:
-	@$(MAKE) libarm-pack
+	@$(MAKE) libarm-pack MCU=1
 
 libarm-pack:
 	@echo "----------------------------------------"
 	@echo -e "Building for an \033[35mARM target\033[0m..."
-	$(MAKE) lib CROSS=arm-none-eabi- BIT_PACK=1
+	$(MAKE) lib CROSS=arm-none-eabi- BIT_PACK=1 MCU=1
 
 libarm-lazy:
 	@echo "----------------------------------------"
 	@echo -e "Building for an \033[35mARM target\033[0m..."
-	$(MAKE) lib CROSS=arm-none-eabi-
+	$(MAKE) lib CROSS=arm-none-eabi- MCU=1
 
 CLEANUP = rm -f
 MKDIR = mkdir -p
@@ -151,7 +150,7 @@ else
 endif
 
 # Override for cross-compiling the build artifact extensions...
-ifneq ($(CROSS), "")
+ifdef MCU
   TARGET_EXTENSION = hex
   STATIC_LIB_EXTENSION = a
 endif
@@ -202,11 +201,13 @@ else ifeq ($(BUILD_TYPE), PROFILE)
 endif
 
 # Compiler setup
-CROSS	= 
+CROSS =
 CC = $(CROSS)gcc
 
-CC_ARM_OPTS = -mcpu=cortex-m0plus -mfloat-abi=soft -mthumb
-MCU_OPTS = --specs=nosys.specs -static --specs=nano.specs -fstack-usage
+ifdef MCU
+  CC_ARM_OPTS = -mcpu=cortex-m0plus -mfloat-abi=soft -mthumb
+  MCU_OPTS = --specs=nosys.specs -static --specs=nano.specs -fstack-usage
+endif
 
 COMPILER_WARNINGS = \
     -Wall -Wextra -Wpedantic -pedantic-errors \
@@ -291,14 +292,14 @@ else
 CFLAGS += $(COMPILER_SANITIZERS) $(COMPILER_OPTIMIZATION_LEVEL_DEBUG)
 endif
 
-ifneq ($(CROSS), "")
+ifdef MCU
   CFLAGS += $(CC_ARM_OPTS) $(MCU_OPTS)
 endif
 
 # Compile up linker flags
-LDFLAGS += $(DIAGNOSTIC_FLAGS) -Wl,--gc-sections -Wl,-Map
-ifneq ($(CROSS), "")
-  LDFLAGS += -Wl,--start-group -lc -lm -Wl,--end-group
+LDFLAGS += $(DIAGNOSTIC_FLAGS)
+ifdef MCU
+  LDFLAGS += -Wl,--start-group -lc -lm -Wl,-Wl,--gc-sections,-Wl,-Map--end-group
 endif
 
 # CppCheck flags/options
