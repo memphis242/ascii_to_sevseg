@@ -52,7 +52,7 @@
 
 /* Local Data */
 
-#if !defined(ASCII_7SEG_DONT_USE_LOOKUP_TABLE) && !defined(ASCII_7SEG_NUMS_ONLY) && !defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
+#if !defined(ASCII_7SEG_NUMS_ONLY) && !defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
 
 static const union Ascii7Seg_Encoding_U MasterLUT[ UINT8_MAX ] =
 {
@@ -215,8 +215,14 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 
 #ifdef ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 
-   // TODO: Add a non-lookup table approach to the full character range support
-   return false;
+   // FIXME: Add a non-lookup table approach to the full character range support.
+   //        There isn't an obvious answer to this one for me, other than a really
+   //        long and ugly logical expression chain like that of the other
+   //        sections, but much worse. I've even scatter-plotted the char vs
+   //        encodings and each bit of the encoding against the original character,
+   //        and there is sadly no clear pattern/function.
+   //        So, for now, we'll end up doing the LUT for this...
+   *buf = MasterLUT[(uint8_t)ascii_char];
 
 #else
 
