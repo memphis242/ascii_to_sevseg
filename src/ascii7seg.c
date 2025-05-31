@@ -216,6 +216,7 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 #ifdef ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 
    // TODO: Add a non-lookup table approach to the full character range support
+   return false;
 
 #else
 
