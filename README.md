@@ -14,7 +14,7 @@ bool Ascii7Seg_IsSupportedChar( char ascii_char );
 ```
 
 ### Range of Characters Supported
-The macros present within [`ascii7seg_config.h`](./ascii7seg_config.h) allow you to configure which of the following 3 ranges you want this library to support (at compile time). By default, the maximum range is what is supported if you choose to do nothing in `ascii7seg_config.h`.   
+The macros present within [`ascii7seg_config.h`](./ascii7seg_config.h) allow you to configure which of the following 3 ranges you want this library to support (at compile time). The smaller the range, the better the speed and space performance. By default, the maximum range is what is supported if you choose to do nothing in `ascii7seg_config.h`.   
 
 1. Numerical Digits Only: `0` to `9`
 2. Numerical Digits + `"Error"` (both capital and lowercase)
@@ -25,7 +25,7 @@ The macros present within [`ascii7seg_config.h`](./ascii7seg_config.h) allow you
 
 ### Compile-Time Configuration
 In addition, the internal implementation of the encoding is _optionally_ configurable (at compile-time), using the macros present within [`ascii7seg_config.h`](./ascii7seg_config.h). Specifically, you can change
-- the range of supported characters (see next section),
+- the range of supported characters,
 - whether a lookup table is used or a computation (speed vs space) - see benchmark/profiling section,
 - and how you want the encoding available to you within `Ascii7Seg_Encoding_U` (bit-packed or separate `bool`'s)
 
