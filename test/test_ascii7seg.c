@@ -124,7 +124,11 @@ void test_Ascii7Seg_ConvertChar_ValidChars(void)
       result = Ascii7Seg_ConvertChar(c, &enc);
       err_msg[0] = c;
       TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
+#ifdef ASCII_7SEG_BIT_PACK
+      TEST_ASSERT_EQUAL_UINT8_MESSAGE(AsciiEncodingReferenceLookup[(uint8_t)c].encoding_as_val, enc.encoding_as_val, err_msg);
+#else
       TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)c], &enc, sizeof(enc), err_msg);
+#endif
    }
 
 #elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
@@ -134,32 +138,60 @@ void test_Ascii7Seg_ConvertChar_ValidChars(void)
       result = Ascii7Seg_ConvertChar(c, &enc);
       err_msg[0] = c;
       TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
+#ifdef ASCII_7SEG_BIT_PACK
+      TEST_ASSERT_EQUAL_UINT8_MESSAGE(AsciiEncodingReferenceLookup[(uint8_t)c].encoding_as_val, enc.encoding_as_val, err_msg);
+#else
       TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)c], &enc, sizeof(enc), err_msg);
+#endif
    }
 
    result = Ascii7Seg_ConvertChar('E', &enc);
    TEST_ASSERT_TRUE_MESSAGE(result, "E");
+#ifdef ASCII_7SEG_BIT_PACK
+   TEST_ASSERT_EQUAL_UINT8_MESSAGE(AsciiEncodingReferenceLookup[(uint8_t)'E'].encoding_as_val, enc.encoding_as_val, "E");
+#else
    TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'E'], &enc, sizeof(enc), "E");
+#endif
 
    result = Ascii7Seg_ConvertChar('e', &enc);
    TEST_ASSERT_TRUE_MESSAGE(result, "e");
+#ifdef ASCII_7SEG_BIT_PACK
+   TEST_ASSERT_EQUAL_UINT8_MESSAGE(AsciiEncodingReferenceLookup[(uint8_t)'e'].encoding_as_val, enc.encoding_as_val, "e");
+#else
    TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'e'], &enc, sizeof(enc), "e");
+#endif
 
    result = Ascii7Seg_ConvertChar('R', &enc);
    TEST_ASSERT_TRUE_MESSAGE(result, "R");
+#ifdef ASCII_7SEG_BIT_PACK
+   TEST_ASSERT_EQUAL_UINT8_MESSAGE(AsciiEncodingReferenceLookup[(uint8_t)'R'].encoding_as_val, enc.encoding_as_val, "R");
+#else
    TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'R'], &enc, sizeof(enc), "R");
+#endif
 
    result = Ascii7Seg_ConvertChar('r', &enc);
    TEST_ASSERT_TRUE_MESSAGE(result, "r");
+#ifdef ASCII_7SEG_BIT_PACK
+   TEST_ASSERT_EQUAL_UINT8_MESSAGE(AsciiEncodingReferenceLookup[(uint8_t)'r'].encoding_as_val, enc.encoding_as_val, "r");
+#else
    TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'r'], &enc, sizeof(enc), "r");
+#endif
 
    result = Ascii7Seg_ConvertChar('O', &enc);
    TEST_ASSERT_TRUE_MESSAGE(result, "O");
+#ifdef ASCII_7SEG_BIT_PACK
+   TEST_ASSERT_EQUAL_UINT8_MESSAGE(AsciiEncodingReferenceLookup[(uint8_t)'O'].encoding_as_val, enc.encoding_as_val, "O");
+#else
    TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'O'], &enc, sizeof(enc), "O");
+#endif
 
    result = Ascii7Seg_ConvertChar('o', &enc);
    TEST_ASSERT_TRUE_MESSAGE(result, "o");
+#ifdef ASCII_7SEG_BIT_PACK
+   TEST_ASSERT_EQUAL_UINT8_MESSAGE(AsciiEncodingReferenceLookup[(uint8_t)'o'].encoding_as_val, enc.encoding_as_val, "o");
+#else
    TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'o'], &enc, sizeof(enc), "o");
+#endif
 
 #else
 
@@ -168,11 +200,18 @@ void test_Ascii7Seg_ConvertChar_ValidChars(void)
       result = Ascii7Seg_ConvertChar(SupportedAsciiCharacters[i], &enc);
       err_msg[0] = SupportedAsciiCharacters[i];
       TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
+#ifdef ASCII_7SEG_BIT_PACK
+      TEST_ASSERT_EQUAL_UINT8_MESSAGE(
+         AsciiEncodingReferenceLookup[(size_t)SupportedAsciiCharacters[i]].encoding_as_val,
+         enc.encoding_as_val,
+         err_msg);
+#else
       TEST_ASSERT_EQUAL_MEMORY_MESSAGE(
-         &AsciiEncodingReferenceLookup[ (size_t)SupportedAsciiCharacters[i] ],
+         &AsciiEncodingReferenceLookup[(size_t)SupportedAsciiCharacters[i]],
          &enc,
          sizeof(enc),
-         err_msg );
+         err_msg);
+#endif
    }
 
 #endif
@@ -251,11 +290,18 @@ void test_Ascii7Seg_ConvertWord_ValidString(void)
    for (size_t i = 0; i < sizeof(str) - 1; ++i)
    {
       (void)snprintf( err_msg, sizeof(err_msg), "%s : %c", str, str[i] );
+#ifdef ASCII_7SEG_BIT_PACK
+      TEST_ASSERT_EQUAL_UINT8_MESSAGE(
+         AsciiEncodingReferenceLookup[(uint8_t)str[i]].encoding_as_val & ASCII_7SEG_BIT_PACK_MASK,
+         buf[i].encoding_as_val & ASCII_7SEG_BIT_PACK_MASK,
+         err_msg );
+#else
       TEST_ASSERT_EQUAL_MEMORY_MESSAGE(
          &AsciiEncodingReferenceLookup[(uint8_t)str[i]],
          &buf[i],
          sizeof(union Ascii7Seg_Encoding_U),
          err_msg );
+#endif
    }
 }
 
