@@ -27,6 +27,23 @@
 
 //! Uncomment to use bit-packing for the Ascii7Seg_Encoding_S struct
 //#define ASCII_7SEG_BIT_PACK
+#ifdef ASCII_7SEG_BIT_PACK
+#define ASCII_7SEG_BIT_PACK_MASK 0x7Fu // lower 7 bits
+
+/**
+ * Define this macro SPECIAL_PACKING_PRAGMA_KEYWORD if you are using a
+ * compiler that is not GCC, clang, or MSVC and need to specify a packing
+ * pragma that differs from those three compilers.
+ *
+ * For example, the Microchip XC8 compiler specifies packing using "__pack"
+ * placed before the type or variable declaration.
+ *
+ * This macro is not fool-proof and is placed before the struct keyword in
+ * ascii7seg.h's definition of the union Ascii7Seg_Encoding_U type.
+ */
+#define SPECIAL_PACKING_PRAGMA_KEYWORD // e.g., __pack for the Microchip XC8 compiler
+
+#endif // ASCII_7SEG_BIT_PACK
 
 //! Uncomment to enforce computation of encoding instead of lookup (to save mem)
 //#define ASCII_7SEG_DONT_USE_LOOKUP_TABLE

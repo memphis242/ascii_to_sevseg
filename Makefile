@@ -199,7 +199,7 @@ COMPILER_WARNINGS = \
     -Wreturn-type -Wlogical-op -Wstrict-aliasing \
     -Wuninitialized -Wmaybe-uninitialized -Wshadow \
     -Wduplicated-cond -Wduplicated-branches \
-    -Walloc-zero -Walloc-size
+    -Walloc-zero -Walloc-size -Wpacked
 
 # Includes some -Wno-... flags for warnings that I'd normally want for my lib
 # src but **not** for my test file, which intentionally has all sorts of

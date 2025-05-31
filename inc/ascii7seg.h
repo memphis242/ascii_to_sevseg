@@ -39,9 +39,17 @@
  */
 union Ascii7Seg_Encoding_U
 {
+
+#ifdef ASCII_7SEG_BIT_PACK
+#ifdef _MSC_VER
+#pragma pack(push, 1)
    struct
+#elif defined(__clang__) || defined(__GNUC__)
+   struct __attribute__((packed))
+#else
+   SPECIAL_PACKING_PRAGMA_KEYWORD struct
+#endif // _MSC_VER
    {
-   #ifdef ASCII_7SEG_BIT_PACK
       unsigned a : 1;
       unsigned b : 1;
       unsigned c : 1;
@@ -50,7 +58,14 @@ union Ascii7Seg_Encoding_U
       unsigned f : 1;
       unsigned g : 1;
       unsigned reserved : 1; // UNUSED. Helps encourage the compiler to store all these bits in a single byte for tighter storage.
-   #else
+   } segments;
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif // ASCII_7SEG_BIT_PACK
+
+#else // !ASCII_7SEG_BIT_PACK
+   struct
+   {
       bool a;
       bool b;
       bool c;
@@ -58,14 +73,15 @@ union Ascii7Seg_Encoding_U
       bool e;
       bool f;
       bool g;
-   #endif
    } segments;
+#endif // ASCII_7SEG_BIT_PACK
 
-   #ifdef ASCII_7SEG_BIT_PACK
-   unsigned encoding_as_val;
-   #else
+#ifdef ASCII_7SEG_BIT_PACK
+   uint8_t encoding_as_val;
+#else
    bool encoding_as_val[7];
-   #endif
+#endif
+
 };
 
 /* Public API */
