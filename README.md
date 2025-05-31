@@ -13,16 +13,8 @@ bool Ascii7Seg_ConvertWord( const char * str,
 bool Ascii7Seg_IsSupportedChar( char ascii_char );
 ```
 
-### Compile-Time Configuration
-In addition, the internal implementation of the encoding is _optionally_ configurable (at compile-time), using the macros present within [`ascii7seg_config.h`](./ascii7seg_config.h). Specifically, you can change
-- the range of supported characters (see next section),
-- whether a lookup table is used or a computation (speed vs space) - see benchmark/profiling section,
-- and how you want the encoding available to you within `Ascii7Seg_Encoding_U` (bit-packed or separate `bool`'s)
-
-You'd simply set the macros as you like and then rebuild the library for your architecture. The idea behind this flexibility is to allow you, the user, to prioritize speed vs space. Again, this is _optional_ and by default, speed is prioritized (lookup tables are used and the encoding is _not_ bit-packed) for the full range of conceivable ASCII characters on a 7-segment display.
-
 ### Range of Characters Supported
-The macros present within [`ascii7seg_config.h`](./ascii7seg_config.h) allow to configure which of the following 3 ranges you want this library to support (at compile time). By default, the maximum range is what is supported if you choose to do nothing in `ascii7seg_config.h`.   
+The macros present within [`ascii7seg_config.h`](./ascii7seg_config.h) allow you to configure which of the following 3 ranges you want this library to support (at compile time). By default, the maximum range is what is supported if you choose to do nothing in `ascii7seg_config.h`.   
 
 1. Numerical Digits Only: `0` to `9`
 2. Numerical Digits + `"Error"` (both capital and lowercase)
@@ -30,6 +22,14 @@ The macros present within [`ascii7seg_config.h`](./ascii7seg_config.h) allow to 
    - `0 - 9`
    - `A - Z` and `a - z`
    - Symbols: `[ ] _ - | =`
+
+### Compile-Time Configuration
+In addition, the internal implementation of the encoding is _optionally_ configurable (at compile-time), using the macros present within [`ascii7seg_config.h`](./ascii7seg_config.h). Specifically, you can change
+- the range of supported characters (see next section),
+- whether a lookup table is used or a computation (speed vs space) - see benchmark/profiling section,
+- and how you want the encoding available to you within `Ascii7Seg_Encoding_U` (bit-packed or separate `bool`'s)
+
+You'd simply set the macros as you like and then rebuild the library for your architecture. The idea behind this flexibility is to allow you, the user, to prioritize speed vs space. Again, this is _optional_ and by default, speed is prioritized (lookup tables are used and the encoding is _not_ bit-packed) for the full range of conceivable ASCII characters on a 7-segment display.
 
 ## Usage
 In the near future, I will place the various build artifacts produced here into a package and publish that to some package management system that you can then conveniently pull in, but for now, you may:
