@@ -1,3 +1,5 @@
+The notes I have for the hash computation done for the `ASCII_7SEG_NUMS_AND_ERROR_ONLY` variant of this library are present below:
+
 E	69	 0100 0101
 e	101 0110 0101
 R	82	 0101 0010
