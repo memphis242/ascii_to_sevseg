@@ -419,8 +419,19 @@ $(LIB_FILE): $(LIB_OBJ_FILES) $(BUILD_DIRS)
 	@echo
 	$(CROSS)ar rcs $@ $<
 
+$(LIB_LIST_FILE): $(LIB_FILE)
+	@echo
+	@echo "----------------------------------------"
+	@echo -e "\033[36mDisassembly\033[0m of $< into $@..."
+	@echo
+	$(CROSS)objdump -D $< > $@
+	@echo "----------------------------------------"
+	@echo -e "\033[36mAnnotated assembly file\033[0m of $(PATH_SRC)$(LIB_NAME).c into $(PATH_BUILD)$(LIB_NAME).s..."
+	@echo
+	$(CC) -S -fverbose-asm $(CC_ARM_OPTS) $(MCU_OPTS) $(COMPILER_OPTIMIZATION_LEVEL_DEBUG) $(COMPILER_WARNINGS) -fdiagnostics-color $(INCLUDE_PATHS) $(COMMON_DEFINES) -o $(PATH_BUILD)$(LIB_NAME).s $(PATH_SRC)$(LIB_NAME).c > /dev/null 2>&1
+
 ######################## Test Rules ########################
-_test: $(BUILD_DIRS) $(TEST_EXECUTABLES) $(LIB_FILE) $(TEST_LIST_FILE) $(RESULTS)
+_test: $(BUILD_DIRS) $(TEST_EXECUTABLES) $(LIB_FILE) $(RESULTS)
 	@echo
 	@echo -e "\033[36mAll tests completed!\033[0m"
 	@echo
@@ -440,7 +451,12 @@ $(PATH_BUILD)%.$(TARGET_EXTENSION): $(TEST_OBJ_FILES) $(UNITY_OBJ_FILES) $(LIB_F
 	@echo
 	$(CC) $(LDFLAGS) $(TEST_OBJ_FILES) $(UNITY_OBJ_FILES) -L$(dir $(LIB_FILE)) -l$(basename $(notdir $(LIB_FILE))) -o $@
 
-$(PATH_OBJECT_FILES)%.o: $(PATH_TEST_FILES)%.c $(COLORIZE_CPPCHECK_SCRIPT)
+######################### Generic ##########################
+
+# Separate rules for the object files that belong to test files, Unity files,
+# and module source files. This is primarily because I want different warning
+# configurations.
+$(PATH_OBJECT_FILES)%.o: $(PATH_TEST_FILES)%.c
 	@echo
 	@echo "----------------------------------------"
 	@echo -e "\033[36mCompiling\033[0m the test file: $<..."
@@ -458,17 +474,7 @@ $(PATH_OBJECT_FILES)%.o: $(PATH_UNITY)%.c $(PATH_UNITY)%.h
 	$(CC) -c $(CFLAGS_TEST) -Wno-float-equal $< -o $@
 	@echo
 
-unity_static_analysis: $(PATH_UNITY)unity.c $(COLORIZE_CPPCHECK_SCRIPT)
-	@echo
-	@echo "----------------------------------------"
-	@echo -e "\033[36mRunning static analysis\033[0m on $<..."
-	@echo
-	cppcheck $(CPPCHECK_OPTIONS) --template='{severity}: {file}:{line}: {message}' $< 2>&1 | tee $(PATH_BUILD)cppcheck.log | python $(COLORIZE_CPPCHECK_SCRIPT)
-
-######################### Generic ##########################
-
-# Compile the primary source file into an object file
-$(PATH_OBJECT_FILES)%.o : $(PATH_SRC)%.c $(PATH_INC)%.h $(COLORIZE_CPPCHECK_SCRIPT)
+$(PATH_OBJECT_FILES)%.o : $(PATH_SRC)%.c $(PATH_INC)%.h
 	@echo
 	@echo "----------------------------------------"
 	@echo -e "\033[36mCompiling\033[0m the primary source file: $<..."
@@ -480,26 +486,18 @@ $(PATH_OBJECT_FILES)%.o : $(PATH_SRC)%.c $(PATH_INC)%.h $(COLORIZE_CPPCHECK_SCRI
 	@echo
 	cppcheck $(CPPCHECK_OPTIONS) --template='{severity}: {file}:{line}: {message}' $< 2>&1 | tee $(PATH_BUILD)cppcheck.log | python $(COLORIZE_CPPCHECK_SCRIPT)
 
-$(LIB_LIST_FILE): $(LIB_FILE)
-	@echo
-	@echo "----------------------------------------"
-	@echo -e "\033[36mDisassembly\033[0m of $< into $@..."
-	@echo
-	$(CROSS)objdump -D $< > $@
-	@echo "----------------------------------------"
-	@echo -e "\033[36mAnnotated assembly file\033[0m of $(PATH_SRC)$(LIB_NAME).c into $(PATH_BUILD)$(LIB_NAME).s..."
-	@echo
-	$(CC) -S -fverbose-asm $(CC_ARM_OPTS) $(MCU_OPTS) $(COMPILER_OPTIMIZATION_LEVEL_DEBUG) $(COMPILER_WARNINGS) -fdiagnostics-color $(INCLUDE_PATHS) $(COMMON_DEFINES) -o $(PATH_BUILD)$(LIB_NAME).s $(PATH_SRC)$(LIB_NAME).c > /dev/null 2>&1
+######################### Miscellaneous ##########################
 
-# Produces an object dump that includes the disassembly of the executable
-$(PATH_BUILD)%.lst: $(PATH_BUILD)%.$(TARGET_EXTENSION)
+unity_static_analysis: $(PATH_UNITY)unity.c
 	@echo
 	@echo "----------------------------------------"
-	@echo -e "\033[36mDisassembly\033[0m of $< into $@..."
+	@echo -e "\033[36mRunning static analysis\033[0m on $<..."
 	@echo
-	objdump -D $< > $@
+	cppcheck $(CPPCHECK_OPTIONS) --template='{severity}: {file}:{line}: {message}' $< 2>&1 | tee $(PATH_BUILD)cppcheck.log | python $(COLORIZE_CPPCHECK_SCRIPT)
 
-# Make the directories if they don't already exist
+
+######################### Directories ##########################
+
 $(PATH_RESULTS):
 	$(MKDIR) $@
 
@@ -557,7 +555,4 @@ clean:
 	$(CLEANUP) $(PATH_RELEASE)*.su
 	@echo
 
-.PRECIOUS: $(PATH_BUILD)%.$(TARGET_EXTENSION)
-.PRECIOUS: $(PATH_BUILD)Test%.o
 .PRECIOUS: $(PATH_RESULTS)%.txt
-.PRECIOUS: $(PATH_RESULTS)%.lst
