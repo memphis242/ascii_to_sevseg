@@ -2,19 +2,7 @@
 
 ################################# The Prelude ##################################
 
-.PHONY: test
-.PHONY: test1
-.PHONY: test2
-.PHONY: test3
-.PHONY: test4
-.PHONY: test5
-.PHONY: test6
-.PHONY: test7
-.PHONY: test8
-.PHONY: test9
-.PHONY: test10
-.PHONY: test11
-.PHONY: test12
+.PHONY: test test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test11 test12
 .PHONY: _test
 .PHONY: lib
 .PHONY: release
