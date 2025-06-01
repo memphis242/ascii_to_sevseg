@@ -53,8 +53,9 @@ Please see the [`CODING_PRINCIPLES.md`](./CODING_PRINCIPLES.md) file for my phil
 
 ## Testing Feedback While Contributing
 1. Run the unit tests by running `make test`
-2. Run a build of all variations for an ARM mcu using `make test-mcu-builds`
-3. TODO: Run a build against non-GCC compilers against all variants using `make test-compiler-builds`
+2. Run a build of all variations for an ARM mcu using `make mcu-builds`
+3. Run a build of all variations for an x86-64 Windows target using `make wx86-64-builds`
+4. TODO: Run a build against non-GCC compilers against all variants using `make all-compiler-builds`
 
 # Acknowledgements
 1. I would like to give a shoutout to @dmadison for the very useful images that he provided in [`dmadison/LED-Segment-ASCII`](https://github.com/dmadison/LED-Segment-ASCII/tree/master). I specifically borrowed [`Segment-Labels.png`](https://github.com/dmadison/LED-Segment-ASCII/blob/497bffc094c866caa2cb729c33de9450d517ba22/Images/Segment-Labels.png) and [`7-Segment - All Supported Chars.png`](https://github.com/dmadison/LED-Segment-ASCII/blob/497bffc094c866caa2cb729c33de9450d517ba22/Images/All%20Characters/7-Segment-ASCII-All.png).

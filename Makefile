@@ -130,33 +130,46 @@ test12:
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST BIT_PACK=1 NO_LUT=1 _test
 
-test-mcu-builds:
+mcu-builds:
 	@echo -e "\033[35mMCU test build 1\033[0m (defaults)..."
 	@$(MAKE) --always-make libarm-lazy > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).a $(PATH_RELEASE)lib$(LIB_NAME)_arm-m0plus.a
 	@echo -e "\033[35mMCU test build 2\033[0m (nums only, default spacing)..."
 	@$(MAKE) --always-make libarm-nums > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).a $(PATH_RELEASE)lib$(LIB_NAME)_nums_arm-m0plus.a
 	@echo -e "\033[35mMCU test build 3\033[0m (nums+err, default spacing)..."
 	@$(MAKE) --always-make libarm-numerr > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).a $(PATH_RELEASE)lib$(LIB_NAME)_numerr_arm-m0plus.a
 	@echo -e "\033[35mMCU test build 4\033[0m (full rng, default spacing)..."
 	@$(MAKE) --always-make libarm-full > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).a $(PATH_RELEASE)lib$(LIB_NAME)_full_arm-m0plus.a
 	@echo -e "\033[35mMCU test build 5\033[0m (nums only, bit-packed)..."
 	@$(MAKE) --always-make libarm-nums-bp > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).a $(PATH_RELEASE)lib$(LIB_NAME)_nums-bp_arm-m0plus.a
 	@echo -e "\033[35mMCU test build 6\033[0m (nums+err, default spacing)..."
 	@$(MAKE) --always-make libarm-numerr-bp > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).a $(PATH_RELEASE)lib$(LIB_NAME)_numerr-bp_arm-m0plus.a
 	@echo -e "\033[35mMCU test build 7\033[0m (full rng, default spacing)..."
 	@$(MAKE) --always-make libarm-full-bp > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).a $(PATH_RELEASE)lib$(LIB_NAME)_full-bp_arm-m0plus.a
 	@echo -e "\033[35mMCU test build 8\033[0m (nums only, default spacing, no lut)..."
 	@$(MAKE) --always-make libarm-nums-nolut > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).a $(PATH_RELEASE)lib$(LIB_NAME)_nums-nolut_arm-m0plus.a
 	@echo -e "\033[35mMCU test build 9\033[0m (nums+err, default spacing, no lut)..."
 	@$(MAKE) --always-make libarm-numerr-nolut > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).a $(PATH_RELEASE)lib$(LIB_NAME)_numerr-nolut_arm-m0plus.a
 	@echo -e "\033[35mMCU test build 10\033[0m (full rng, default spacing, no lut)..."
 	@$(MAKE) --always-make libarm-full-nolut > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).a $(PATH_RELEASE)lib$(LIB_NAME)_full-nolut_arm-m0plus.a
 	@echo -e "\033[35mMCU test build 11\033[0m (nums only, bit packed, no lut)..."
 	@$(MAKE) --always-make libarm-nums-bp-nolut > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).a $(PATH_RELEASE)lib$(LIB_NAME)_nums-bp-no-lut_arm-m0plus.a
 	@echo -e "\033[35mMCU test build 12\033[0m (nums+err, bit packed, no lut)..."
 	@$(MAKE) --always-make libarm-numerr-bp-nolut > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).a $(PATH_RELEASE)lib$(LIB_NAME)_numerr-bp-nolut_arm-m0plus.a
 	@echo -e "\033[35mMCU test build 13\033[0m (full rng, bit packed, no lut)..."
 	@$(MAKE) --always-make libarm-full-bp-nolut > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).a $(PATH_RELEASE)lib$(LIB_NAME)_full-bp-no-lut_arm-m0plus.a
 
 libmcu:
 	@$(MAKE) libarm
@@ -204,6 +217,83 @@ libarm-lazy:
 	@echo "----------------------------------------"
 	@echo -e "Building for an \033[35mARM target\033[0m..."
 	$(MAKE) lib CROSS=arm-none-eabi-
+
+wx86-64-builds:
+	@echo -e "\033[35mWindows x86-64 test build 1\033[0m (defaults)..."
+	@$(MAKE) --always-make lib > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).lib $(PATH_RELEASE)lib$(LIB_NAME)_wx86-64.lib
+	@echo -e "\033[35mWindows x86-64 test build 2\033[0m (nums only, default spacing)..."
+	@$(MAKE) --always-make libwx86-64-nums > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).lib $(PATH_RELEASE)lib$(LIB_NAME)_nums_wx86-64.lib
+	@echo -e "\033[35mWindows x86-64 test build 3\033[0m (nums+err, default spacing)..."
+	@$(MAKE) --always-make libwx86-64-numerr > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).lib $(PATH_RELEASE)lib$(LIB_NAME)_numerr_wx86-64.lib
+	@echo -e "\033[35mWindows x86-64 test build 4\033[0m (full rng, default spacing)..."
+	@$(MAKE) --always-make libwx86-64-full > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).lib $(PATH_RELEASE)lib$(LIB_NAME)_full_wx86-64.lib
+	@echo -e "\033[35mWindows x86-64 test build 5\033[0m (nums only, bit-packed)..."
+	@$(MAKE) --always-make libwx86-64-nums-bp > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).lib $(PATH_RELEASE)lib$(LIB_NAME)_nums-bp_wx86-64.lib
+	@echo -e "\033[35mWindows x86-64 test build 6\033[0m (nums+err, default spacing)..."
+	@$(MAKE) --always-make libwx86-64-numerr-bp > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).lib $(PATH_RELEASE)lib$(LIB_NAME)_numerr-bp_wx86-64.lib
+	@echo -e "\033[35mWindows x86-64 test build 7\033[0m (full rng, default spacing)..."
+	@$(MAKE) --always-make libwx86-64-full-bp > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).lib $(PATH_RELEASE)lib$(LIB_NAME)_full-bp_wx86-64.lib
+	@echo -e "\033[35mWindows x86-64 test build 8\033[0m (nums only, default spacing, no lut)..."
+	@$(MAKE) --always-make libwx86-64-nums-nolut > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).lib $(PATH_RELEASE)lib$(LIB_NAME)_nums-nolut_wx86-64.lib
+	@echo -e "\033[35mWindows x86-64 test build 9\033[0m (nums+err, default spacing, no lut)..."
+	@$(MAKE) --always-make libwx86-64-numerr-nolut > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).lib $(PATH_RELEASE)lib$(LIB_NAME)_numerr-nolut_wx86-64.lib
+	@echo -e "\033[35mWindows x86-64 test build 10\033[0m (full rng, default spacing, no lut)..."
+	@$(MAKE) --always-make libwx86-64-full-nolut > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).lib $(PATH_RELEASE)lib$(LIB_NAME)_full-nolut_wx86-64.lib
+	@echo -e "\033[35mWindows x86-64 test build 11\033[0m (nums only, bit packed, no lut)..."
+	@$(MAKE) --always-make libwx86-64-nums-bp-nolut > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).lib $(PATH_RELEASE)lib$(LIB_NAME)_nums-bp-no-lut_wx86-64.lib
+	@echo -e "\033[35mWindows x86-64 test build 12\033[0m (nums+err, bit packed, no lut)..."
+	@$(MAKE) --always-make libwx86-64-numerr-bp-nolut > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).lib $(PATH_RELEASE)lib$(LIB_NAME)_numerr-bp-nolut_wx86-64.lib
+	@echo -e "\033[35mWindows x86-64 test build 13\033[0m (full rng, bit packed, no lut)..."
+	@$(MAKE) --always-make libwx86-64-full-bp-nolut > /dev/null
+	@mv $(PATH_RELEASE)lib$(LIB_NAME).lib $(PATH_RELEASE)lib$(LIB_NAME)_full-bp-no-lut_wx86-64.lib
+
+libwx86-64-nums:
+	$(MAKE) lib TEST_RANGE=NUMS_ONLY
+
+libwx86-64-numerr:
+	@$(MAKE) lib TEST_RANGE=NUMS_AND_ERROR_ONLY
+
+libwx86-64-full:
+	@$(MAKE) lib
+
+libwx86-64-nums-bp:
+	$(MAKE) lib TEST_RANGE=NUMS_ONLY BIT_PACK=1
+
+libwx86-64-numerr-bp:
+	$(MAKE) lib TEST_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1
+
+libwx86-64-full-bp:
+	$(MAKE) lib BIT_PACK=1
+
+libwx86-64-nums-nolut:
+	$(MAKE) lib TEST_RANGE=NUMS_ONLY NO_LUT=1
+
+libwx86-64-numerr-nolut:
+	@$(MAKE) lib TEST_RANGE=NUMS_AND_ERROR_ONLY NO_LUT=1
+
+libwx86-64-full-nolut:
+	@$(MAKE) lib NO_LUT=1
+
+libwx86-64-nums-bp-nolut:
+	$(MAKE) lib TEST_RANGE=NUMS_ONLY BIT_PACK=1 NO_LUT=1
+
+libwx86-64-numerr-bp-nolut:
+	$(MAKE) lib TEST_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 NO_LUT=1
+
+libwx86-64-full-bp-nolut:
+	$(MAKE) lib BIT_PACK=1 NO_LUT=1
 
 CLEANUP = rm -f
 MKDIR = mkdir -p
