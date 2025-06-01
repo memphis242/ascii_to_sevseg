@@ -18,34 +18,6 @@
 
 /* Local Macro Definitions */
 
-/**
- * @brief Lookup table for 7-segment ASCII digit encodings.
- * 
- * @note This is made a macro because there will be repeated usage in Ascii7Seg_ConvertChar()
- *       for the various configurations of this module.
- *
- * This macro defines a static constant array, `NumLUT`, containing the segment encoding
- * for the digits 0 through 9 as displayed on a 7-segment display.
- *
- * Usage:
- *   NUM_LUT();
- *   // Access NumLUT[digit] to get the segment encoding for a digit (0-9).
- */
-#define NUM_LUT()                                                                            \
-   static const union Ascii7Seg_Encoding_U NumLUT[] =                                        \
-   {                                                                                         \
-      {  /* 0 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 } },   \
-      {  /* 1 */ .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 } },   \
-      {  /* 2 */ .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 } },   \
-      {  /* 3 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 1 } },   \
-      {  /* 4 */ .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 1, .g = 1 } },   \
-      {  /* 5 */ .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 } },   \
-      {  /* 6 */ .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 } },   \
-      {  /* 7 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 } },   \
-      {  /* 8 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 } },   \
-      {  /* 9 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 } }    \
-   }
-
 // Constant-like macros
 
 // Function-like macros
@@ -56,6 +28,15 @@
 
 #if !defined(ASCII_7SEG_NUMS_ONLY) && !defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
 
+/**
+ * MasterLUT is a lookup table (LUT) containing the 7-segment display encodings
+ * for all supported ASCII characters.
+ *
+ * The table is indexed by the ASCII value of the character, allowing for fast
+ * retrieval of the segment encoding for any character in the supported range,
+ * and removing the need for a hash. Hypothetically, a clever-er hash function
+ * can condense down this table, but I'm yet to come up with one.
+ */
 static const union Ascii7Seg_Encoding_U MasterLUT[ CHAR_MAX + 1 ] =
 {
    [(uint8_t)'0'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
@@ -68,6 +49,8 @@ static const union Ascii7Seg_Encoding_U MasterLUT[ CHAR_MAX + 1 ] =
    [(uint8_t)'7'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 }, },
    [(uint8_t)'8'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 }, },
    [(uint8_t)'9'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 }, },
+   [(uint8_t)'('] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 0 }, },
+   [(uint8_t)')'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 0 }, },
    [(uint8_t)'['] = { .segments = { .a = 1, .b = 0, .c = 0, .d = 1, .e = 1, .f = 1, .g = 0 }, },
    [(uint8_t)']'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 0 }, },
    [(uint8_t)'_'] = { .segments = { .a = 0, .b = 0, .c = 0, .d = 1, .e = 0, .f = 0, .g = 0 }, },
@@ -130,6 +113,28 @@ static const union Ascii7Seg_Encoding_U MasterLUT[ CHAR_MAX + 1 ] =
    [(uint8_t)'Z'] = { .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 }, }
 };
 
+#elif !defined(ASCII_7SEG_DONT_USE_LOOKUP_TABLE)
+
+/**
+ * NumLUT is a lookup table (LUT) containing the 7-segment display encodings
+ * for the digit ASCII characters. It is part of the lookup table strategy for
+ * the variations of this library that don't need the full range of supported
+ * characters.
+ */
+static const union Ascii7Seg_Encoding_U NumLUT[] =
+{
+   {  /* 0 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 } },
+   {  /* 1 */ .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 } },
+   {  /* 2 */ .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 0, .g = 1 } },
+   {  /* 3 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 0, .g = 1 } },
+   {  /* 4 */ .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 1, .g = 1 } },
+   {  /* 5 */ .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 } },
+   {  /* 6 */ .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 } },
+   {  /* 7 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 } },
+   {  /* 8 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 } },
+   {  /* 9 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 } } 
+};
+
 #endif
 
 /* Private Function Prototypes */
@@ -161,8 +166,6 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 
 #else // Use a lookup table
 
-   NUM_LUT();
-
    *buf = NumLUT[ ascii_char - '0' ];
 
 #endif // ASCII_7SEG_DONT_USE_LOOKUP_TABLE
@@ -186,9 +189,12 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 
 #else // Use a lookup table
 
-   // Make two separate lookup tables so I don't have to repeat the numeric lookup table outside of the NUM_LUT macro.
-   // This adds an if statement but I think that's worth it because of the easier time hashing.
-   NUM_LUT();
+   /** 
+    * Additional lookup table for this nums + "error" variant of the library
+    * because this plus the additional if statement make for a simple solution
+    * that doesn't involve a complex hash for a LUT that combines both the digit
+    * characters and the "error" (upper/lowercase) characters.
+    */
    static const union Ascii7Seg_Encoding_U ErrorLUT[] =
    {                                                                                      
       {  /* e */ .segments = { .a = 1, .b = 1, .c = 0, .d = 1, .e = 1, .f = 1, .g = 1 } },
@@ -205,8 +211,10 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 #if defined(__GNUC__)
 /* -Wconversion suppression:
 * Specifically, the warning is:
+*
 *    src/ascii7seg.c:204:22: warning: conversion from 'int' to 'uint8_t' {aka 'unsigned char'} may change value [-Wconversion]
 *    204 |       uint8_t hash = ((((uint8_t)ascii_char & 0x3) - 1) << 1) + (((uint8_t)ascii_char & 0x20) == 0);
+*
 * I'm not concerned about this here because ascii_char is constrained to one
 * of a few char values, all of which work fine going through the computation.
 */
@@ -236,10 +244,10 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
    // FIXME: Add a non-lookup table approach to the full character range support.
    //        There isn't an obvious answer to this one for me, other than a really
    //        long and ugly logical expression chain like that of the other
-   //        sections, but much worse. I've even scatter-plotted the char vs
-   //        encodings and each bit of the encoding against the original character,
-   //        and there is sadly no clear pattern/function.
-   //        So, for now, we'll end up doing the LUT for this...
+   //        sections, but much worse. One can take a look at the scatter plots
+   //        at the root of the repository that visualize the encoding mapping
+   //        and clearly, this is not a simple closed-form function.
+   //        So, for now, I'll go for this lookup table approach...
    *buf = MasterLUT[(uint8_t)ascii_char];
 
 #else
@@ -301,8 +309,10 @@ bool Ascii7Seg_IsSupportedChar( char ascii_char )
       )
 #else
    if ( !isalnum(ascii_char) &&
-        (ascii_char != '[') && (ascii_char != ']') && (ascii_char != '_') &&
-        (ascii_char != '-') && (ascii_char != '|') && (ascii_char != '=') &&
+        (ascii_char != '[') && (ascii_char != ']') &&
+        (ascii_char != '(') && (ascii_char != ')') &&
+        (ascii_char != '_') && (ascii_char != '-') && 
+        (ascii_char != '|') && (ascii_char != '=') &&
         (ascii_char != '>') && (ascii_char != '<') )
 #endif // ASCII_7SEG_NUMS_ONLY
 

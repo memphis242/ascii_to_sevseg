@@ -123,7 +123,7 @@ extern "C" {
  * 
  * @note Supported Characters (can be limited by the macros in ascii7seg_config.h):
  *    0-9
- *    [, ], _, -, |, =,
+ *    [, ], (, ), _, -, |, =, >, < (not including the comma ',' character)
  *    a-z (not every character will be beautiful)
  *    A-Z (not every character will be beautiful)
  * 

@@ -121,6 +121,28 @@ const union Ascii7Seg_Encoding_U AsciiEncodingReferenceLookup[ UINT8_MAX + 1 ] =
                .d = 1
          }
       },
+   ['('] =
+      {
+         .segments =
+         {
+               .a = 1,
+         .f = 1,     .b = 0,
+               .g = 0,
+         .e = 1,     .c = 0,
+               .d = 1
+         }
+      },
+   [')'] =
+      {
+         .segments =
+         {
+               .a = 1,
+         .f = 0,     .b = 1,
+               .g = 0,
+         .e = 0,     .c = 1,
+               .d = 1
+         }
+      },
    ['['] =
       {
          .segments =
