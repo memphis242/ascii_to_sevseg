@@ -406,31 +406,20 @@ void test_Ascii7Seg_ConvertWord_ZeroLen(void)
 
 void test_Ascii7Seg_IsSupportedChar_AllAscii(void)
 {
+   for (int c = 0; c <= 127; ++c)
+   {
 #ifdef ASCII_7SEG_NUMS_ONLY
-   for (int c = 0; c <= 127; ++c)
-   {
       bool expected = (c >= '0' && c <= '9');
-      char msg[32];
-      snprintf(msg, sizeof(msg), "Char: %c", c);
-      TEST_ASSERT_EQUAL_MESSAGE(expected, Ascii7Seg_IsSupportedChar((char)c), msg);
-   }
 #elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
-   for (int c = 0; c <= 127; ++c)
-   {
       bool is_digit = (c >= '0' && c <= '9');
       bool is_error = (c == 'E' || c == 'e' || c == 'R' || c == 'r' || c == 'O' || c == 'o');
       bool expected = is_digit || is_error;
-      char msg[32];
-      snprintf(msg, sizeof(msg), "Char: %c", c);
-      TEST_ASSERT_EQUAL_MESSAGE(expected, Ascii7Seg_IsSupportedChar((char)c), msg);
-   }
 #else
-   for (int c = 0; c <= 127; ++c)
-   {
       bool expected = helper_IsSupportedChar((char)c);
-      char msg[32];
-      snprintf(msg, sizeof(msg), "Char: %c", c);
+#endif
+      char msg[2];
+      msg[0] = (char)c;
+      msg[1] = '\0';
       TEST_ASSERT_EQUAL_MESSAGE(expected, Ascii7Seg_IsSupportedChar((char)c), msg);
    }
-#endif
 }
