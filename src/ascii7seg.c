@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <assert.h>
 #include <ctype.h>
+#include <limits.h>
 #include "ascii7seg.h"
 #include "ascii7seg_config.h"
 
@@ -55,7 +56,7 @@
 
 #if !defined(ASCII_7SEG_NUMS_ONLY) && !defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
 
-static const union Ascii7Seg_Encoding_U MasterLUT[ UINT8_MAX ] =
+static const union Ascii7Seg_Encoding_U MasterLUT[ CHAR_MAX + 1 ] =
 {
    [(uint8_t)'0'] = { .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 0 }, },
    [(uint8_t)'1'] = { .segments = { .a = 0, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 }, },
