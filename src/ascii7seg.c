@@ -213,7 +213,7 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #endif
-      // See "Notes for Hashing.txt" file at root of repo
+      // See "Notes for Hashing.md" file at root of repo
       uint8_t hash = ((((uint8_t)ascii_char & 0x3) - 1) << 1) + (((uint8_t)ascii_char & 0x20) == 0);
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
