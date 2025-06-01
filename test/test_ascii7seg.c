@@ -283,10 +283,10 @@ void test_Ascii7Seg_ConvertWord_ValidString(void)
 #endif
 
    union Ascii7Seg_Encoding_U buf[ sizeof(str) ];
-   bool result = Ascii7Seg_ConvertWord(str, sizeof(str), buf);
+   size_t converted = Ascii7Seg_ConvertWord(str, sizeof(str), buf);
    char err_msg[70];
-   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should succeed for valid string: %9s", str );
-   TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
+   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should convert all chars for valid string: %9s", str );
+   TEST_ASSERT_EQUAL_MESSAGE(sizeof(str) - 1, converted, err_msg);
    for (size_t i = 0; i < sizeof(str) - 1; ++i)
    {
       (void)snprintf( err_msg, sizeof(err_msg), "%s : %c", str, str[i] );
@@ -326,43 +326,45 @@ void test_Ascii7Seg_ConvertWord_InvalidChars(void)
 #endif
 
    union Ascii7Seg_Encoding_U buf[3];
-   bool result = Ascii7Seg_ConvertWord(str1, 3, buf);
+   size_t converted;
    char err_msg[60];
-   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should fail for string /w invalid char(s): %3s", str1 );
-   TEST_ASSERT_FALSE_MESSAGE(result, err_msg);
 
-   result = Ascii7Seg_ConvertWord(str2, 3, buf);
-   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should fail for string /w invalid char(s): %3s", str2 );
-   TEST_ASSERT_FALSE_MESSAGE(result, err_msg);
+   converted = Ascii7Seg_ConvertWord(str1, 3, buf);
+   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should stop at first invalid char in: %3s", str1 );
+   TEST_ASSERT_LESS_THAN_MESSAGE(3, converted, err_msg);
 
-   result = Ascii7Seg_ConvertWord(str3, 3, buf);
-   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should fail for string /w invalid char(s): %3s", str3 );
-   TEST_ASSERT_FALSE_MESSAGE(result, err_msg);
+   converted = Ascii7Seg_ConvertWord(str2, 3, buf);
+   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should stop at first invalid char in: %3s", str2 );
+   TEST_ASSERT_LESS_THAN_MESSAGE(3, converted, err_msg);
 
-   result = Ascii7Seg_ConvertWord(str4, 3, buf);
-   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should fail for string /w invalid char(s): %3s", str4 );
-   TEST_ASSERT_FALSE_MESSAGE(result, err_msg);
+   converted = Ascii7Seg_ConvertWord(str3, 3, buf);
+   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should stop at first invalid char in: %3s", str3 );
+   TEST_ASSERT_LESS_THAN_MESSAGE(3, converted, err_msg);
+
+   converted = Ascii7Seg_ConvertWord(str4, 3, buf);
+   (void)snprintf( err_msg, sizeof(err_msg), "Ascii7Seg_ConvertWord should stop at first invalid char in: %3s", str4 );
+   TEST_ASSERT_LESS_THAN_MESSAGE(3, converted, err_msg);
 }
 
 void test_Ascii7Seg_ConvertWord_NullBuf(void)
 {
    const char *str = "123";
-   bool result = Ascii7Seg_ConvertWord(str, 3, NULL);
-   TEST_ASSERT_FALSE_MESSAGE(result, "Ascii7Seg_ConvertWord should fail if buf is NULL");
+   size_t converted = Ascii7Seg_ConvertWord(str, 3, NULL);
+   TEST_ASSERT_EQUAL_MESSAGE(0, converted, "Ascii7Seg_ConvertWord should return 0 if buf is NULL");
 }
 
 void test_Ascii7Seg_ConvertWord_NullStr(void)
 {
    union Ascii7Seg_Encoding_U buf[3];
-   bool result = Ascii7Seg_ConvertWord(NULL, 3, buf);
-   TEST_ASSERT_FALSE_MESSAGE(result, "Ascii7Seg_ConvertWord should fail if str is NULL");
+   size_t converted = Ascii7Seg_ConvertWord(NULL, 3, buf);
+   TEST_ASSERT_EQUAL_MESSAGE(0, converted, "Ascii7Seg_ConvertWord should return 0 if str is NULL");
 }
 
 void test_Ascii7Seg_ConvertWord_ZeroLen(void)
 {
    union Ascii7Seg_Encoding_U buf[1];
-   bool result = Ascii7Seg_ConvertWord("A", 0, buf);
-   TEST_ASSERT_FALSE_MESSAGE(result, "Ascii7Seg_ConvertWord should fail if str_len is zero");
+   size_t converted = Ascii7Seg_ConvertWord("A", 0, buf);
+   TEST_ASSERT_EQUAL_MESSAGE(0, converted, "Ascii7Seg_ConvertWord should return 0 if str_len is zero");
 }
 
 /******************************* Is Supported? ********************************/

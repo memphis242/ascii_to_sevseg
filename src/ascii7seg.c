@@ -255,9 +255,9 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 }
 
 /******************************************************************************/
-bool Ascii7Seg_ConvertWord( const char * str,
-                            size_t str_len,
-                            union Ascii7Seg_Encoding_U * buf )
+size_t Ascii7Seg_ConvertWord( const char * str,
+                              size_t str_len,
+                              union Ascii7Seg_Encoding_U * buf )
 {
    if ( (NULL == str) || (NULL == buf) )
    {
@@ -265,21 +265,21 @@ bool Ascii7Seg_ConvertWord( const char * str,
    }
 
    bool word_converted = false;
-   unsigned int iterations = 0;
-   while ( (str[iterations] != '\0') && (iterations < str_len) )
+   size_t chars_converted = 0;
+   while ( (str[chars_converted] != '\0') && (chars_converted < str_len) )
    {
-      word_converted = Ascii7Seg_ConvertChar( str[iterations],
-                                              &buf[iterations] );
+      word_converted = Ascii7Seg_ConvertChar( str[chars_converted],
+                                              &buf[chars_converted] );
       if ( !word_converted )
       {
          // Character failed to convert
          break;
       }
 
-      iterations++;
+      chars_converted++;
    }
 
-   return word_converted;
+   return chars_converted;
 }
 
 /******************************************************************************/

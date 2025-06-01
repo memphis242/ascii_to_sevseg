@@ -151,11 +151,11 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf );
  * @param[in]  str_len  Length of the input string to convert.
  * @param[out] buf      Pointer to the buffer where the 7-segment encodings will be stored.
  *
- * @return true if the conversion was successful for all characters; false otherwise.
+ * @return Number of characters converted
  */
-bool Ascii7Seg_ConvertWord( const char * str,
-                            size_t str_len,
-                            union Ascii7Seg_Encoding_U * buf );
+size_t Ascii7Seg_ConvertWord( const char * str,
+                              size_t str_len,
+                              union Ascii7Seg_Encoding_U * buf );
 
 /**
  * @brief Checks if the given ASCII character is supported by this module.
