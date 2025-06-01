@@ -2,12 +2,16 @@
 
 ################################# The Prelude ##################################
 
-.PHONY: test test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test11 test12
+.PHONY: test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test11 test12
+.PHONY: test
 .PHONY: _test
+.PHONY: test-mcu-builds
 .PHONY: lib
 .PHONY: release
 .PHONY: libmcu
 .PHONY: libarm
+.PHONY: libarm-nums libarm-numerr libarm-full libarm-nums-bp libarm-numerr-bp libarm-full-bp
+.PHONY: libarm-nums-nolut libarm-numerr-nolut libarm-full-nolut libarm-nums-bp-nolut libarm-numerr-bp-nolut libarm-full-bp-nolut
 .PHONY: unity_static_analysis
 .PHONY: clean
 
@@ -102,16 +106,75 @@ test12:
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST BIT_PACK=1 NO_LUT=1 _test
 
+test-mcu-builds:
+	@echo -e "\033[35mMCU test build 1\033[0m (defaults)..."
+	@$(MAKE) --always-make libarm-lazy > /dev/null
+	@echo -e "\033[35mMCU test build 2\033[0m (nums only, default spacing)..."
+	@$(MAKE) --always-make libarm-nums > /dev/null
+	@echo -e "\033[35mMCU test build 3\033[0m (nums+err, default spacing)..."
+	@$(MAKE) --always-make libarm-numerr > /dev/null
+	@echo -e "\033[35mMCU test build 4\033[0m (full rng, default spacing)..."
+	@$(MAKE) --always-make libarm-full > /dev/null
+	@echo -e "\033[35mMCU test build 5\033[0m (nums only, bit-packed)..."
+	@$(MAKE) --always-make libarm-nums-bp > /dev/null
+	@echo -e "\033[35mMCU test build 6\033[0m (nums+err, default spacing)..."
+	@$(MAKE) --always-make libarm-numerr-bp > /dev/null
+	@echo -e "\033[35mMCU test build 7\033[0m (full rng, default spacing)..."
+	@$(MAKE) --always-make libarm-full-bp > /dev/null
+	@echo -e "\033[35mMCU test build 8\033[0m (nums only, default spacing, no lut)..."
+	@$(MAKE) --always-make libarm-nums-nolut > /dev/null
+	@echo -e "\033[35mMCU test build 9\033[0m (nums+err, default spacing, no lut)..."
+	@$(MAKE) --always-make libarm-numerr-nolut > /dev/null
+	@echo -e "\033[35mMCU test build 10\033[0m (full rng, default spacing, no lut)..."
+	@$(MAKE) --always-make libarm-full-nolut > /dev/null
+	@echo -e "\033[35mMCU test build 11\033[0m (nums only, bit packed, no lut)..."
+	@$(MAKE) --always-make libarm-nums-bp-nolut > /dev/null
+	@echo -e "\033[35mMCU test build 12\033[0m (nums+err, bit packed, no lut)..."
+	@$(MAKE) --always-make libarm-numerr-bp-nolut > /dev/null
+	@echo -e "\033[35mMCU test build 13\033[0m (full rng, bit packed, no lut)..."
+	@$(MAKE) --always-make libarm-full-bp-nolut > /dev/null
+
 libmcu:
 	@$(MAKE) libarm
 
 libarm:
-	@$(MAKE) libarm-pack
+	@$(MAKE) libarm-nums
 
-libarm-pack:
-	@echo "----------------------------------------"
-	@echo -e "Building for an \033[35mARM target\033[0m..."
+libarm-nums:
+	$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_ONLY
+
+libarm-numerr:
+	@$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_AND_ERROR_ONLY
+
+libarm-full:
+	@$(MAKE) lib CROSS=arm-none-eabi-
+
+libarm-nums-bp:
+	$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_ONLY BIT_PACK=1
+
+libarm-numerr-bp:
+	$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1
+
+libarm-full-bp:
 	$(MAKE) lib CROSS=arm-none-eabi- BIT_PACK=1
+
+libarm-nums-nolut:
+	$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_ONLY NO_LUT=1
+
+libarm-numerr-nolut:
+	@$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_AND_ERROR_ONLY NO_LUT=1
+
+libarm-full-nolut:
+	@$(MAKE) lib CROSS=arm-none-eabi- NO_LUT=1
+
+libarm-nums-bp-nolut:
+	$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_ONLY BIT_PACK=1 NO_LUT=1
+
+libarm-numerr-bp-nolut:
+	$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 NO_LUT=1
+
+libarm-full-bp-nolut:
+	$(MAKE) lib CROSS=arm-none-eabi- BIT_PACK=1 NO_LUT=1
 
 libarm-lazy:
 	@echo "----------------------------------------"
