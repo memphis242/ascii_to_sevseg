@@ -19,18 +19,42 @@ BUILD_TYPE ?= RELEASE
 
 # Target to run a test build for every config combo
 test:
-	@$(MAKE) --always-make test1
-	@$(MAKE) --always-make test2
-	@$(MAKE) --always-make test3
-	@$(MAKE) --always-make test4
-	@$(MAKE) --always-make test5
-	@$(MAKE) --always-make test6
-	@$(MAKE) --always-make test7
-	@$(MAKE) --always-make test8
-	@$(MAKE) --always-make test9
-	@$(MAKE) --always-make test10
-	@$(MAKE) --always-make test11
-	@$(MAKE) --always-make test12
+	@echo -e "Test 1: \033[35mnumbers only version\033[0m /w other defaults..."
+	@$(MAKE) --always-make test1 > /dev/null
+	cat $(RESULTS) | python $(COLORIZE_UNITY_SCRIPT)
+	@echo -e "Test 2: \033[35mnumbers + 'error' version\033[0m /w other defaults..."
+	@$(MAKE) --always-make test2 > /dev/null
+	cat $(RESULTS) | python $(COLORIZE_UNITY_SCRIPT)
+	@echo -e "Test 3: \033[35mcomplete version\033[0m /w other defaults..."
+	@$(MAKE) --always-make test3 > /dev/null
+	cat $(RESULTS) | python $(COLORIZE_UNITY_SCRIPT)
+	@echo -e "Test 4: \033[35mnumbers only version\033[0m /w \033[34mbit packing\033[0m..."
+	@$(MAKE) --always-make test4 > /dev/null
+	cat $(RESULTS) | python $(COLORIZE_UNITY_SCRIPT)
+	@echo -e "Test 5: \033[35mnumbers + 'error' version\033[0m /w \033[34mbit packing\033[0m..."
+	@$(MAKE) --always-make test5 > /dev/null
+	cat $(RESULTS) | python $(COLORIZE_UNITY_SCRIPT)
+	@echo -e "Test 6: \033[35mcomplete version\033[0m /w \033[34mbit packing\033[0m..."
+	@$(MAKE) --always-make test6 > /dev/null
+	cat $(RESULTS) | python $(COLORIZE_UNITY_SCRIPT)
+	@echo -e "Test 7: \033[35mnumbers only version\033[0m \033[34m/wo LUT\033[0m..."
+	@$(MAKE) --always-make test7 > /dev/null
+	cat $(RESULTS) | python $(COLORIZE_UNITY_SCRIPT)
+	@echo -e "Test 8: \033[35mnumbers + 'error' version\033[0m \033[34m/wo LUT\033[0m..."
+	@$(MAKE) --always-make test8 > /dev/null
+	cat $(RESULTS) | python $(COLORIZE_UNITY_SCRIPT)
+	@echo -e "Test 9: \033[35mcomplete version\033[0m \033[34m/wo LUT\033[0m..."
+	@$(MAKE) --always-make test9 > /dev/null
+	cat $(RESULTS) | python $(COLORIZE_UNITY_SCRIPT)
+	@echo -e "Test 10: \033[35mnumbers only version\033[0m with \033[34mbit packing\033[0m \033[36m/wo LUT\033[0m..."
+	@$(MAKE) --always-make test10 > /dev/null
+	cat $(RESULTS) | python $(COLORIZE_UNITY_SCRIPT)
+	@echo -e "Test 11: \033[35mnumbers + 'error' version\033[0m with \033[34mbit packing\033[0m \033[36m/wo LUT\033[0m..."
+	@$(MAKE) --always-make test11 > /dev/null
+	cat $(RESULTS) | python $(COLORIZE_UNITY_SCRIPT)
+	@echo -e "Test 12: \033[35mcomplete version\033[0m with \033[34mbit packing\033[0m \033[36m/wo LUT\033[0m..."
+	@$(MAKE) --always-make test12 > /dev/null
+	cat $(RESULTS) | python $(COLORIZE_UNITY_SCRIPT)
 
 # Targets to run only one config combo.
 # NOTE: If you run testX and then want to run testY, make sure to clean first!
@@ -424,12 +448,14 @@ $(PATH_OBJECT_FILES)%.o: $(PATH_TEST_FILES)%.c $(COLORIZE_CPPCHECK_SCRIPT)
 	$(CC) -c $(CFLAGS_TEST) $< -o $@
 	@echo
 
+# Suppress -Wfloat-equal just for unity.c because I don't own that file...
+# FIXME: Submit a PR/ticket to ThrowTheSwitch/Unity for this.
 $(PATH_OBJECT_FILES)%.o: $(PATH_UNITY)%.c $(PATH_UNITY)%.h
 	@echo
 	@echo "----------------------------------------"
 	@echo -e "\033[36mCompiling\033[0m the unity file: $<..."
 	@echo
-	$(CC) -c $(CFLAGS_TEST) $< -o $@
+	$(CC) -c $(CFLAGS_TEST) -Wno-float-equal $< -o $@
 	@echo
 
 unity_static_analysis: $(PATH_UNITY)unity.c $(COLORIZE_CPPCHECK_SCRIPT)
