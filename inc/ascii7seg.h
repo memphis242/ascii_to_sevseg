@@ -44,7 +44,7 @@ union Ascii7Seg_Encoding_U
 #ifdef _MSC_VER
 #pragma pack(push, 1)
    struct
-#elif defined(__clang__) || defined(__GNUC__)
+#elif defined(__GNUC__)
 /* -Wattributes is suppressed just around this struct member of the overall union.
  * Specifically, the warning is:
  *    "warning: packed attribute causes inefficient alignment for 'a' [-Wattributes]"
@@ -76,7 +76,7 @@ union Ascii7Seg_Encoding_U
    } segments;
 #ifdef _MSC_VER
 #pragma pack(pop)
-elif defined(__clang__) || defined(__GNUC__)
+#elif defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif // ASCII_7SEG_BIT_PACK
 
