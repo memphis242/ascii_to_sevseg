@@ -44,7 +44,8 @@ union Ascii7Seg_Encoding_U
 #ifdef _MSC_VER
 #pragma pack(push, 1)
    struct
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) || defined(__clang__)
+#ifdef __GNUC__
 /* -Wattributes is suppressed just around this struct member of the overall union.
  * Specifically, the warning is:
  *    "warning: packed attribute causes inefficient alignment for 'a' [-Wattributes]"
@@ -60,6 +61,7 @@ union Ascii7Seg_Encoding_U
  */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wattributes"
+#endif
    struct __attribute__((packed))
 #else
    SPECIAL_PACKING_PRAGMA_KEYWORD struct
@@ -119,8 +121,7 @@ extern "C" {
  * Ascii7Seg_Encoding_U structure that represents the 7-segment display drive
  * signals required to display the character.
  * 
- * @note Supported Characters (can be limited by the macros in
- *       ascii7seg_config.h):
+ * @note Supported Characters (can be limited by the macros in ascii7seg_config.h):
  *    0-9
  *    [, ], _, -, |, =,
  *    a-z (not every character will be beautiful)
@@ -143,9 +144,9 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf );
  * into its corresponding 7-segment display encoding, storing the result
  * in the provided buffer.
  * 
- * @note This function converts encodes each character in the string, one at a
- *       time, until it fails to encode a character or reaches the end of the
- *       string or str_len characters.
+ * @note This function encodes each character in the string, one at a time,
+ *       until it fails to encode a character or reaches the end of the string,
+ *       or str_len characters.
  * @note This also means that if there is at least one valid character and
  *       str_len is > 1, buf is mutated!
  *
@@ -161,8 +162,6 @@ size_t Ascii7Seg_ConvertWord( const char * str,
 
 /**
  * @brief Checks if the given ASCII character is supported by this module.
- *
- * Note the macros in ascii7seg_config.h change the answer.
  *
  * @param ascii_char The ASCII character to check.
  * @return true if the character is supported; false otherwise.
