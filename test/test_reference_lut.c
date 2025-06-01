@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include "ascii7seg.h"
 
-const union Ascii7Seg_Encoding_U AsciiEncodingReferenceLookup[ UINT8_MAX ] =
+const union Ascii7Seg_Encoding_U AsciiEncodingReferenceLookup[ UINT8_MAX + 1 ] =
 {
    ['0'] =
       {
