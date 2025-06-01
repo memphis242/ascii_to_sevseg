@@ -300,21 +300,10 @@ bool Ascii7Seg_IsSupportedChar( char ascii_char )
         )
       )
 #else
-#ifdef ASCII_7SEG_DONT_USE_LOOKUP_TABLE
    if ( !isalnum(ascii_char) &&
         (ascii_char != '[') && (ascii_char != ']') && (ascii_char != '_') &&
         (ascii_char != '-') && (ascii_char != '|') && (ascii_char != '=') &&
         (ascii_char != '>') && (ascii_char != '<') )
-#else // !ASCII_7SEG_DONT_USE_LOOKUP_TABLE
-#ifdef ASCII_7SEG_BIT_PACK
-   if ( MasterLUT[(uint8_t)ascii_char].encoding_as_val == 0 )
-#else
-   if ( MasterLUT[(uint8_t)ascii_char].segments.a == 0 && MasterLUT[(uint8_t)ascii_char].segments.b == 0 && 
-        MasterLUT[(uint8_t)ascii_char].segments.c == 0 && MasterLUT[(uint8_t)ascii_char].segments.d == 0 &&
-        MasterLUT[(uint8_t)ascii_char].segments.e == 0 && MasterLUT[(uint8_t)ascii_char].segments.f == 0 &&
-        MasterLUT[(uint8_t)ascii_char].segments.g == 0 )
-#endif // ASCII_7SEG_BIT_PACK
-#endif // !ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 #endif // ASCII_7SEG_NUMS_ONLY
 
    {
