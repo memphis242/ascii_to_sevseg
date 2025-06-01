@@ -45,6 +45,21 @@ union Ascii7Seg_Encoding_U
 #pragma pack(push, 1)
    struct
 #elif defined(__clang__) || defined(__GNUC__)
+/* -Wattributes is suppressed just around this struct member of the overall union.
+ * Specifically, the warning is:
+ *    "warning: packed attribute causes inefficient alignment for 'a' [-Wattributes]"
+ * However, bitfields are not going to be efficient no matter what. That is
+ * intentional. With that said, there is a safety/correctness concern because
+ * packing also removes any padding the compiler might have put in to enforce
+ * natural alignment for the target architecture. This causes issues if one
+ * were to make arrays of the underlying type or perhaps use a pointer to the
+ * struct's members. I am not concerned about this here because this packed struct
+ * is within a union that is _not_ packed, which means the compiler is still
+ * free to pad the surrounding union. Furthermore, this is an annonymous struct,
+ * and the end-user is not able to make variables of this type alone.
+ */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wattributes"
    struct __attribute__((packed))
 #else
    SPECIAL_PACKING_PRAGMA_KEYWORD struct
@@ -61,6 +76,8 @@ union Ascii7Seg_Encoding_U
    } segments;
 #ifdef _MSC_VER
 #pragma pack(pop)
+elif defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif // ASCII_7SEG_BIT_PACK
 
 #else // !ASCII_7SEG_BIT_PACK
