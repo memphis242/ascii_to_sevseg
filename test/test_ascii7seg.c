@@ -45,6 +45,7 @@ void setUp(void);
 void tearDown(void);
 
 void test_Ascii7Seg_ConvertChar_ValidChars(void);
+void test_Ascii7Seg_ConvertChar_NonPackedUnionCheck(void);
 void test_Ascii7Seg_ConvertChar_InvalidChars(void);
 void test_Ascii7Seg_ConvertChar_NullBuf(void);
 
@@ -66,6 +67,7 @@ int main(void)
    UNITY_BEGIN();
 
    RUN_TEST(test_Ascii7Seg_ConvertChar_ValidChars);
+   RUN_TEST(test_Ascii7Seg_ConvertChar_NonPackedUnionCheck);
    RUN_TEST(test_Ascii7Seg_ConvertChar_InvalidChars);
    RUN_TEST(test_Ascii7Seg_ConvertChar_NullBuf);
 
@@ -214,6 +216,38 @@ void test_Ascii7Seg_ConvertChar_ValidChars(void)
 #endif
    }
 
+#endif
+
+}
+
+void test_Ascii7Seg_ConvertChar_NonPackedUnionCheck(void)
+{
+   union Ascii7Seg_Encoding_U enc;
+   bool result;
+
+   result = Ascii7Seg_ConvertChar('0', &enc);   // All variants support '0'
+   TEST_ASSERT_TRUE_MESSAGE(result, "0");
+   // '0' would render as all segments on except the middle on (g)
+#ifdef ASCII_7SEG_BIT_PACK
+   TEST_ASSERT_EQUAL_UINT8_MESSAGE(
+      0x3F,
+      enc.encoding_as_val & ASCII_7SEG_BIT_PACK_MASK,
+      "0" );
+#else
+   TEST_ASSERT_TRUE( enc.encoding_as_val[0] );
+   TEST_ASSERT_TRUE( enc.segments.a );
+   TEST_ASSERT_TRUE( enc.encoding_as_val[1] );
+   TEST_ASSERT_TRUE( enc.segments.b );
+   TEST_ASSERT_TRUE( enc.encoding_as_val[2] );
+   TEST_ASSERT_TRUE( enc.segments.c );
+   TEST_ASSERT_TRUE( enc.encoding_as_val[3] );
+   TEST_ASSERT_TRUE( enc.segments.d );
+   TEST_ASSERT_TRUE( enc.encoding_as_val[4] );
+   TEST_ASSERT_TRUE( enc.segments.e );
+   TEST_ASSERT_TRUE( enc.encoding_as_val[5] );
+   TEST_ASSERT_TRUE( enc.segments.f );
+   TEST_ASSERT_FALSE( enc.encoding_as_val[6] );
+   TEST_ASSERT_FALSE( enc.segments.g );
 #endif
 
 }

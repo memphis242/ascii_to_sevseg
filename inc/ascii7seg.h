@@ -96,7 +96,9 @@ union Ascii7Seg_Encoding_U
 #ifdef ASCII_7SEG_BIT_PACK
    uint8_t encoding_as_val;
 #else
-   bool encoding_as_val[7];
+   bool encoding_as_val[7]; // NOTE: Unioning this with a struct of 7 bool's is
+                            //       not guaranteed to work as intended by the
+                            //       standard but practically, this should be ok...
 #endif
 
 };
