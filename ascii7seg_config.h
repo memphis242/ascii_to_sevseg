@@ -1,7 +1,6 @@
 /**
  * @file ascii7seg_config.h
- * @brief Configuration macros to modify how this library will behave and its
- *        interface.
+ * @brief Configuration macros to modify how this library will execute its functionality.
  *
  * By default, the library will be lazy and use a lookup table to perform the
  * encoding and the primary interface datatype Ascii7Seg_Encoding_U will _not_
@@ -40,6 +39,10 @@
  *
  * This macro is not fool-proof and is placed before the struct keyword in
  * ascii7seg.h's definition of the union Ascii7Seg_Encoding_U type.
+ * 
+ * Also, if you don't define this macro, everything should still be fine. You
+ * just won't get the extra degree of force on the compiler to pack the bit-field'd
+ * struct in Ascii7Seg_Encoding_U.
  */
 #define SPECIAL_PACKING_PRAGMA_KEYWORD // e.g., __pack for the Microchip XC8 compiler
 
