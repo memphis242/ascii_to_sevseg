@@ -200,8 +200,24 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 
    if ( ascii_char > '9' )
    {
+
+#if defined(__GNUC__)
+/* -Wconversion suppression:
+* Specifically, the warning is:
+*    src/ascii7seg.c:204:22: warning: conversion from 'int' to 'uint8_t' {aka 'unsigned char'} may change value [-Wconversion]
+*    204 |       uint8_t hash = ((((uint8_t)ascii_char & 0x3) - 1) << 1) + (((uint8_t)ascii_char & 0x20) == 0);
+* I'm not concerned about this here because ascii_char is constrained to one
+* of a few char values, all of which work fine going through the computation.
+*/
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
       // See "Notes for Hashing.txt" file at root of repo
       uint8_t hash = ((((uint8_t)ascii_char & 0x3) - 1) << 1) + (((uint8_t)ascii_char & 0x20) == 0);
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+
       *buf = ErrorLUT[hash];
    }
    else
