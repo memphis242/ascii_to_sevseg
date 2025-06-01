@@ -414,7 +414,7 @@ $(PATH_BUILD)%.$(TARGET_EXTENSION): $(TEST_OBJ_FILES) $(UNITY_OBJ_FILES) $(LIB_F
 	@echo "----------------------------------------"
 	@echo -e "\033[36mLinking\033[0m $(TEST_OBJ_FILES), $(UNITY_OBJ_FILES), and the static lib $(LIB_FILE) into an executable..."
 	@echo
-	$(CC) $(LDFLAGS) $(TEST_OBJ_FILES) $(UNITY_OBJ_FILES) -L$(PATH_BUILD) -l$(basename $(notdir $(LIB_FILE))) -o $@
+	$(CC) $(LDFLAGS) $(TEST_OBJ_FILES) $(UNITY_OBJ_FILES) -L$(dir $(LIB_FILE)) -l$(basename $(notdir $(LIB_FILE))) -o $@
 
 $(PATH_OBJECT_FILES)%.o: $(PATH_TEST_FILES)%.c $(COLORIZE_CPPCHECK_SCRIPT)
 	@echo
