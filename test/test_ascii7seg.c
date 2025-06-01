@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <limits.h>
 #include "unity.h"
 #include "ascii7seg.h"
 #include "ascii7seg_config.h"
