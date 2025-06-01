@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release! :man_dancing:
 
-[1.0.0]: (https://github.com/memphis242/ascii7seg/tags/1.0.0)
+[1.0.0]: https://github.com/memphis242/ascii7seg/releases/tags/1.0.0
 
 
 ## [0.1.0] - 2025-05-31
@@ -19,4 +19,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Basic documentation (e.g., `README.md`, images) in place
 - `Makefile` set up for library build (desktop and ARM MCU targets) and test build
 
-[0.1.0]: (https://github.com/memphis242/ascii7seg/tags/0.1.0)
+[0.1.0]: https://github.com/memphis242/ascii7seg/releases/tag/0.1.0
