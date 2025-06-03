@@ -366,6 +366,7 @@ LIB_LIST_FILE = $(patsubst %.$(STATIC_LIB_EXTENSION), $(PATH_BUILD)%.lst, $(notd
 TEST_LIST_FILE = $(patsubst %.$(TARGET_EXTENSION), $(PATH_BUILD)%.lst, $(notdir $(TEST_EXECUTABLES)))
 TEST_OBJ_FILES = $(patsubst %.c, $(PATH_OBJECT_FILES)%.o, $(notdir $(SRC_TEST_FILES)))
 RESULTS = $(patsubst %.$(TARGET_EXTENSION), $(PATH_RESULTS)%.txt, $(notdir $(TEST_EXECUTABLES)))
+GCOV_FILES = $(SRC_FILES:.c=.c.gcov)
 
 ifeq ($(BUILD_TYPE), TEST)
   BUILD_DIRS += $(PATH_RESULTS)
@@ -473,6 +474,10 @@ LDFLAGS += $(DIAGNOSTIC_FLAGS)
 ifneq ($(strip $(CROSS)),)
   LDFLAGS += -Wl,--start-group -lc -lm -Wl,-Wl,--gc-sections,-Wl,-Map--end-group
 endif
+ifeq ($(BUILD_TYPE), TEST)
+   LDFLAGS += -lgcov --coverage
+endif
+end
 
 # CppCheck flags/options
 
@@ -490,6 +495,19 @@ endif
 CPPCHECK_SUPPRESSIONS = --suppress=unknownEvaluationOrder
 
 CPPCHECK_OPTIONS = --std=c99 --cppcheck-build-dir=$(PATH_BUILD) $(CPPCHECK_SUPPRESSIONS)
+
+# GCov
+# gcov Flags
+GCOV = gcov
+GCOV_FLAGS = --conditions --function-summaries --branch-probabilities --branch-counts
+ifeq ($(GCOV_CON), 1)
+GCOV_FLAGS += --use-colors --stdout
+endif
+GCOV_CONSOLE_OUT_FILE = gcov_console_out.txt
+
+# gcovr Flags
+GCOVR_FLAGS = --html-details $(PATH_RESULTS)coverage.html
+
 
 ############################# The Rules & Recipes ##############################
 
@@ -575,6 +593,11 @@ $(PATH_OBJECT_FILES)%.o : $(PATH_SRC)%.c $(PATH_INC)%.h
 	@echo -e "\033[36mRunning static analysis\033[0m on $<..."
 	@echo
 	cppcheck $(CPPCHECK_OPTIONS) --template='{severity}: {file}:{line}: {message}' $< 2>&1 | tee $(PATH_BUILD)cppcheck.log | python $(COLORIZE_CPPCHECK_SCRIPT)
+
+	$(GCOV) $(GCOV_FLAGS) --object-directory $(PATH_OBJECT_FILES:%/=%) $< > $(PATH_RESULTS)$(GCOV_CONSOLE_OUT_FILE)
+	mv *.gcov $(PATH_RESULTS)
+	gcovr $(GCOVR_FLAGS)
+	@echo
 
 ######################### Miscellaneous ##########################
 
