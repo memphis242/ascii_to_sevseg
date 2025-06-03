@@ -444,7 +444,7 @@ CFLAGS = $(INCLUDE_PATHS) $(COMMON_DEFINES) \
 			$(DIAGNOSTIC_FLAGS) $(COMPILER_WARNINGS) $(COMPILER_STATIC_ANALYZER) \
 			$(COMPILER_STANDARD)
 
-CFLAGS_TEST = \
+CFLAGS_TEST_FILES = \
          -DTEST $(COMMON_DEFINES) $(TEST_DEFINES) \
          $(INCLUDE_PATHS) \
          $(DIAGNOSTIC_FLAGS) $(COMPILER_WARNINGS_TEST_BUILD) \
@@ -572,7 +572,7 @@ $(PATH_OBJECT_FILES)%.o: $(PATH_TEST_FILES)%.c
 	@echo "----------------------------------------"
 	@echo -e "\033[36mCompiling\033[0m the test file: $<..."
 	@echo
-	$(CC) -c $(CFLAGS_TEST) $< -o $@
+	$(CC) -c $(CFLAGS_TEST_FILES) $< -o $@
 	@echo
 
 # Suppress -Wfloat-equal just for unity.c because I don't own that file...
@@ -582,7 +582,7 @@ $(PATH_OBJECT_FILES)%.o: $(PATH_UNITY)%.c $(PATH_UNITY)%.h
 	@echo "----------------------------------------"
 	@echo -e "\033[36mCompiling\033[0m the unity file: $<..."
 	@echo
-	$(CC) -c $(CFLAGS_TEST) -Wno-float-equal $< -o $@
+	$(CC) -c $(CFLAGS_TEST_FILES) -Wno-float-equal $< -o $@
 	@echo
 
 $(PATH_OBJECT_FILES)%.o : $(PATH_SRC)%.c $(PATH_INC)%.h
