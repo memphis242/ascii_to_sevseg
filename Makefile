@@ -454,6 +454,10 @@ CFLAGS_TEST = \
 ifeq ($(BUILD_TYPE), RELEASE)
 CFLAGS += -DNDEBUG $(COMPILER_OPTIMIZATION_LEVEL_SPEED)
 
+else ifeq ($(BUILD_TYPE), TEST)
+# Flags for gcov
+CFLAGS += -fcondition-coverage -fprofile-arcs -ftest-coverage
+
 else ifeq ($(BUILD_TYPE), BENCHMARK)
 CFLAGS += -DNDEBUG $(COMPILER_OPTIMIZATION_LEVEL_SPEED)
 
@@ -477,7 +481,6 @@ endif
 ifeq ($(BUILD_TYPE), TEST)
    LDFLAGS += -lgcov --coverage
 endif
-end
 
 # CppCheck flags/options
 
@@ -539,7 +542,7 @@ $(LIB_LIST_FILE): $(LIB_FILE)
 	$(CC) -S -fverbose-asm $(CC_ARM_OPTS) $(MCU_OPTS) $(COMPILER_OPTIMIZATION_LEVEL_DEBUG) $(COMPILER_WARNINGS) -fdiagnostics-color $(INCLUDE_PATHS) $(COMMON_DEFINES) -o $(PATH_BUILD)$(LIB_NAME).s $(PATH_SRC)$(LIB_NAME).c > /dev/null 2>&1
 
 ######################## Test Rules ########################
-_test: $(BUILD_DIRS) $(TEST_EXECUTABLES) $(LIB_FILE) $(RESULTS)
+_test: $(BUILD_DIRS) $(TEST_EXECUTABLES) $(LIB_FILE) $(RESULTS) $(GCOV_FILES)
 	@echo
 	@echo -e "\033[36mAll tests completed!\033[0m"
 	@echo
@@ -592,8 +595,22 @@ $(PATH_OBJECT_FILES)%.o : $(PATH_SRC)%.c $(PATH_INC)%.h
 	@echo "----------------------------------------"
 	@echo -e "\033[36mRunning static analysis\033[0m on $<..."
 	@echo
-	cppcheck $(CPPCHECK_OPTIONS) --template='{severity}: {file}:{line}: {message}' $< 2>&1 | tee $(PATH_BUILD)cppcheck.log | python $(COLORIZE_CPPCHECK_SCRIPT)
 
+# NOTE:
+# gcov seems very picky about how the directory to look for .gcno and .gcda
+# files is specified. The string for the directory must utilize forward slashes
+# '/', not back slashes '\', and must not end with a forward slash. Otherwise,
+# gcov exists with a cryptic
+# 		<obj_dir>/.gcno:cannot open notes file
+# kind of error. Hence, I use $(<path>:%/=%) /w PATH_OBJECT_FILES.
+#
+# Also, I've redirected gcov's output because I want to prioritize viewing the
+# unit test results. Coverage results are meant to be inspected manually rather
+# than fed back immediately to the developer.
+$(PATH_SRC)%.c.gcov: $(PATH_SRC)%.c $(PATH_INC)%.h
+	@echo
+	@echo "----------------------------------------"
+	@echo -e "\033[36mAnalyzing coverage\033[0m for $<..."
 	$(GCOV) $(GCOV_FLAGS) --object-directory $(PATH_OBJECT_FILES:%/=%) $< > $(PATH_RESULTS)$(GCOV_CONSOLE_OUT_FILE)
 	mv *.gcov $(PATH_RESULTS)
 	gcovr $(GCOVR_FLAGS)
@@ -633,8 +650,12 @@ $(PATH_DEBUG):
 clean:
 	@echo
 	$(CLEANUP) $(PATH_OBJECT_FILES)*.o
+	$(CLEANUP) $(PATH_OBJECT_FILES)*.gcda
+	$(CLEANUP) $(PATH_OBJECT_FILES)*.gcno
 	$(CLEANUP) $(PATH_BUILD)*.$(TARGET_EXTENSION)
 	$(CLEANUP) $(PATH_RESULTS)*.txt
+	$(CLEANUP) $(PATH_RESULTS)*.html
+	$(CLEANUP) $(PATH_RESULTS)*.css
 	$(CLEANUP) $(PATH_BUILD)*.txt
 	$(CLEANUP) $(PATH_BUILD)*.s1
 	$(CLEANUP) $(PATH_BUILD)*.a1
