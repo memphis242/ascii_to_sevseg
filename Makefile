@@ -398,7 +398,7 @@ COMPILER_WARNINGS = \
 # Includes some -Wno-... flags for warnings that I'd normally want for my lib
 # src but **not** for my test file, which intentionally has all sorts of
 # naughty shenanigans going on
-COMPILER_WARNINGS_TEST_BUILD = \
+COMPILER_WARNINGS_TEST_FILES = \
     -Wall -Wextra -Wpedantic -pedantic-errors \
     -Wconversion -Wdouble-promotion -Wnull-dereference \
     -Wwrite-strings -Wformat=2 -Wformat-overflow=2 \
@@ -408,7 +408,6 @@ COMPILER_WARNINGS_TEST_BUILD = \
     -Wdeprecated-declarations -Wmissing-prototypes -Wparentheses \
     -Wreturn-type -Wlogical-op -Wstrict-aliasing \
     -Wuninitialized -Wmaybe-uninitialized -Wshadow \
-    -Wsuggest-attribute=const \
     -Walloc-zero -Walloc-size \
     -Wno-analyzer-use-of-uninitialized-value -Wno-uninitialized \
     -Wno-maybe-uninitialized
@@ -447,7 +446,7 @@ CFLAGS = $(INCLUDE_PATHS) $(COMMON_DEFINES) \
 CFLAGS_TEST_FILES = \
          -DTEST $(COMMON_DEFINES) $(TEST_DEFINES) \
          $(INCLUDE_PATHS) \
-         $(DIAGNOSTIC_FLAGS) $(COMPILER_WARNINGS_TEST_BUILD) \
+         $(DIAGNOSTIC_FLAGS) $(COMPILER_WARNINGS_TEST_FILES) \
          $(COMPILER_STATIC_ANALYZER) $(COMPILER_STANDARD) \
          $(COMPILER_SANITIZERS) $(COMPILER_OPTIMIZATION_LEVEL_DEBUG)
 
