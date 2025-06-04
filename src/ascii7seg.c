@@ -291,6 +291,29 @@ size_t Ascii7Seg_ConvertWord( const char * str,
 }
 
 /******************************************************************************/
+bool Ascii7Seg_ConvertNum( int64_t num,
+                           union Ascii7Seg_Encoding_U * buf,
+                           size_t buf_len )
+{
+   if ( (NULL == buf) || (0 == buf_len) )
+   {
+      return false;
+   }
+
+   assert(buf_len > 0);
+
+   size_t idx = 0;
+   if ( num < 0 )
+   {
+      bool conversion = Ascii7Seg_ConvertChar('-', &buf[0]);
+      if ( !conversion ) return false;
+      idx = 1;
+   }
+
+   return true;
+}
+
+/******************************************************************************/
 bool Ascii7Seg_IsSupportedChar( char ascii_char )
 {
 

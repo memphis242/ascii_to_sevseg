@@ -122,7 +122,7 @@ extern "C" {
  * signals required to display the character.
  * 
  * @note Supported Characters (can be limited by the macros in ascii7seg_config.h):
- *    0-9
+ *    0-9 + '-'
  *    [, ], (, ), _, -, |, =, >, < (not including the comma ',' character)
  *    a-z (not every character will be beautiful)
  *    A-Z (not every character will be beautiful)
@@ -159,6 +159,28 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf );
 size_t Ascii7Seg_ConvertWord( const char * str,
                               size_t str_len,
                               union Ascii7Seg_Encoding_U * buf );
+
+/**
+ * @brief Converts a numeric value to its 7-segment ASCII representation.
+ *
+ * This function takes a 64-bit signed integer and converts it into its
+ * corresponding 7-segment ASCII encoding, using the minimum number of digits
+ * needed, up to 20 characters for the maximum representable 64-bit integer
+ * (including the negative sign).
+ * 
+ * @note The digits are placed most-significant digit first. For example,
+ *       10,503 gets placed into the buffer as the encoding versions of
+ *       { '1', '0', '5', '0', '3' }.
+ *
+ * @param num      The number to convert.
+ * @param buf      Pointer to a buffer of Ascii7Seg_Encoding_U unions where the result will be stored.
+ * @param buf_len  The length of the buffer (number of elements).
+ *
+ * @return true if conversion was successful; false otherwise.
+ */
+bool Ascii7Seg_ConvertNum( int64_t num,
+                           union Ascii7Seg_Encoding_U * buf,
+                           size_t buf_len );
 
 /**
  * @brief Checks if the given ASCII character is supported by this module.

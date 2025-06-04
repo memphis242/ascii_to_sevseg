@@ -19,7 +19,7 @@ The macros present within [`ascii7seg_config.h`](./ascii7seg_config.h) allow you
 1. Numerical Digits Only: `0` to `9`
 2. Numerical Digits + `"Error"` (both capital and lowercase)
 3. Full Range: (72 characters supported)
-   - `0 - 9`
+   - `0 - 9` and `-`
    - `A - Z` and `a - z` (not every character will be rendered beautifully)
    - Symbols: `[ ] ( ) _ - | = > <`
 

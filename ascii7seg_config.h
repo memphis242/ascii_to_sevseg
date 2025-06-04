@@ -6,7 +6,7 @@
  * encoding and the primary interface datatype Ascii7Seg_Encoding_U will _not_
  * be bitpacked. It will also have the following range of valid encodable
  * characters (aka the Default Encodable Range):
- *    - 0-9
+ *    - 0-9 and '-' (negative sign)
  *    - Special Characters: [ ] _ - | =
  *    - a-z (not every character will be beautiful)
  *    - A-Z (not every character will be beautiful)
@@ -57,7 +57,7 @@
 // NOTE! If you did not uncomment any of the below macros, the Default Encodable
 //       Range is assumed (see file header comment).
 
-//! Uncomment to narrow down the set of characters to convert to only the digits 0-9 (saves space and computation time)
+//! Uncomment to narrow down the set of characters to convert to only the digits 0-9 (saves space and computation time) and '-'
 //#define ASCII_7SEG_NUMS_ONLY
 
 #ifndef ASCII_7SEG_NUMS_ONLY  // Do not remove this #ifndef construct!

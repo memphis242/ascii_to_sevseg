@@ -23,6 +23,21 @@
 
 /* Local Variables */
 
+#if defined(ASCII_7SEG_NUMS_ONLY) || defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
+#ifdef __GNUC__
+/* -Wunused-const-variable suppression:
+* Specifically, the warning is:
+*
+* test/test_ascii7seg.c:26:19: warning: 'SupportedAsciiCharacters' defined but not used [-Wunused-const-variable=]
+*    26 | static const char SupportedAsciiCharacters[] =
+*       |                   ^~~~~~~~~~~~~~~~~~~~~~~~
+*
+* I want this warning for the largest range support build but not for the other variants.
+*/
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-const-variable"
+#endif // __GNUC__
+#endif // Char range macros
 static const char SupportedAsciiCharacters[] =
 {
    // 0-9
@@ -36,6 +51,11 @@ static const char SupportedAsciiCharacters[] =
    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
       'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
 };
+#if defined(ASCII_7SEG_NUMS_ONLY) || defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif // __GNUC__
+#endif // Char range macros
 
 // Full ASCII Encoding Lookup Table
 extern const union Ascii7Seg_Encoding_U AsciiEncodingReferenceLookup[ UINT8_MAX ];
@@ -55,6 +75,14 @@ void test_Ascii7Seg_ConvertWord_InvalidChars(void);
 void test_Ascii7Seg_ConvertWord_NullBuf(void);
 void test_Ascii7Seg_ConvertWord_NullStr(void);
 void test_Ascii7Seg_ConvertWord_ZeroLen(void);
+
+void test_Ascii7Seg_ConvertNum_PositiveNumbers(void);
+void test_Ascii7Seg_ConvertNum_NegativeNumbers(void);
+void test_Ascii7Seg_ConvertNum_BufferTooSmall(void);
+void test_Ascii7Seg_ConvertNum_BufLenMoreThanNeeded(void);
+void test_Ascii7Seg_ConvertNum_NullBuffer(void);
+void test_Ascii7Seg_ConvertNum_ZeroLengthBuffer(void);
+void test_Ascii7Seg_ConvertNum_LargeNumbers(void);
 
 void test_Ascii7Seg_IsSupportedChar_AllAscii(void);
 
@@ -78,6 +106,14 @@ int main(void)
    RUN_TEST(test_Ascii7Seg_ConvertWord_NullStr);
    RUN_TEST(test_Ascii7Seg_ConvertWord_ZeroLen);
 
+   RUN_TEST(test_Ascii7Seg_ConvertNum_PositiveNumbers);
+   RUN_TEST(test_Ascii7Seg_ConvertNum_NegativeNumbers);
+   RUN_TEST(test_Ascii7Seg_ConvertNum_BufferTooSmall);
+   RUN_TEST(test_Ascii7Seg_ConvertNum_BufLenMoreThanNeeded);
+   RUN_TEST(test_Ascii7Seg_ConvertNum_NullBuffer);
+   RUN_TEST(test_Ascii7Seg_ConvertNum_ZeroLengthBuffer);
+   RUN_TEST(test_Ascii7Seg_ConvertNum_LargeNumbers);
+
    RUN_TEST(test_Ascii7Seg_IsSupportedChar_AllAscii);
 
    return UNITY_END();
@@ -99,6 +135,18 @@ void tearDown(void)
 
 bool helper_IsSupportedChar(char c)
 {
+#ifdef ASCII_7SEG_NUMS_ONLY
+   if ( ( ((char)c >= '0') && ((char)c <= '9') ) || ('-' == (char)c) )
+   {
+      return true;
+   }
+#elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
+   if ( ( ((char)c >= '0') && ((char)c <= '9') ) || ('-' == (char)c) ||
+         (tolower((int)c) == 'e') || (tolower((int)c) == 'r') || (tolower((int)c) == 'o') )
+   {
+      return true;
+   }
+#else
    for ( size_t i = 0; i < sizeof(SupportedAsciiCharacters); i++ )
    {
       if ( SupportedAsciiCharacters[i] == c )
@@ -106,6 +154,7 @@ bool helper_IsSupportedChar(char c)
          return true;
       }
    }
+#endif
 
    return false;
 }
@@ -134,6 +183,15 @@ void test_Ascii7Seg_ConvertChar_ValidChars(void)
 #endif
    }
 
+   result = Ascii7Seg_ConvertChar('-', &enc);
+   err_msg[0] = '-';
+   TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
+#ifdef ASCII_7SEG_BIT_PACK
+   TEST_ASSERT_EQUAL_UINT8_MESSAGE(AsciiEncodingReferenceLookup[(uint8_t)'-'].encoding_as_val, enc.encoding_as_val, err_msg);
+#else
+   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'-'], &enc, sizeof(enc), err_msg);
+#endif
+
 #elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
 
    for ( char c = '0'; c <= '9'; c++ )
@@ -147,6 +205,15 @@ void test_Ascii7Seg_ConvertChar_ValidChars(void)
       TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)c], &enc, sizeof(enc), err_msg);
 #endif
    }
+
+   result = Ascii7Seg_ConvertChar('-', &enc);
+   err_msg[0] = '-';
+   TEST_ASSERT_TRUE_MESSAGE(result, err_msg);
+#ifdef ASCII_7SEG_BIT_PACK
+   TEST_ASSERT_EQUAL_UINT8_MESSAGE(AsciiEncodingReferenceLookup[(uint8_t)'-'].encoding_as_val, enc.encoding_as_val, err_msg);
+#else
+   TEST_ASSERT_EQUAL_MEMORY_MESSAGE(&AsciiEncodingReferenceLookup[(uint8_t)'-'], &enc, sizeof(enc), err_msg);
+#endif
 
    result = Ascii7Seg_ConvertChar('E', &enc);
    TEST_ASSERT_TRUE_MESSAGE(result, "E");
@@ -259,29 +326,6 @@ void test_Ascii7Seg_ConvertChar_InvalidChars(void)
 
    for ( int c = CHAR_MIN; c <= CHAR_MAX; c++ )
    {
-
-#ifdef ASCII_7SEG_NUMS_ONLY
-
-      if ( ((char)c >= '0') && ((char)c <= '9') )  continue;
-      bool result = Ascii7Seg_ConvertChar((char)c, &enc);
-      char msg[60];
-      snprintf( msg, 60, "Ascii7Seg_ConvertChar should fail for unsupported char: %c", (char)c );
-      TEST_ASSERT_FALSE_MESSAGE(result, msg);
-
-#elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
-
-      if ( ( ((char)c >= '0') && ((char)c <= '9') ) ||
-            (tolower((int)c) == 'e') || (tolower((int)c) == 'r') || (tolower((int)c) == 'o') )
-      {
-         continue;
-      }
-      bool result = Ascii7Seg_ConvertChar((char)c, &enc);
-      char msg[60];
-      snprintf( msg, 60, "Ascii7Seg_ConvertChar should fail for unsupported char: %c", (char)c );
-      TEST_ASSERT_FALSE_MESSAGE(result, msg);
-
-#else
-
       if ( helper_IsSupportedChar((char)c) )
       {
          continue;
@@ -291,10 +335,7 @@ void test_Ascii7Seg_ConvertChar_InvalidChars(void)
       snprintf( msg, 60, "Ascii7Seg_ConvertChar should fail for unsupported char: %c", (char)c );
       TEST_ASSERT_FALSE_MESSAGE(result, msg);
 
-#endif
-
    }
-
 }
 
 void test_Ascii7Seg_ConvertChar_NullBuf(void)
@@ -310,7 +351,7 @@ void test_Ascii7Seg_ConvertWord_ValidString(void)
 {
 
 #ifdef ASCII_7SEG_NUMS_ONLY
-   const char str[] = "123";
+   const char str[] = "-123";
 #elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
    const char str[] = "err123";
 #else
@@ -400,6 +441,101 @@ void test_Ascii7Seg_ConvertWord_ZeroLen(void)
    union Ascii7Seg_Encoding_U buf[1];
    size_t converted = Ascii7Seg_ConvertWord("A", 0, buf);
    TEST_ASSERT_EQUAL_MESSAGE(0, converted, "Ascii7Seg_ConvertWord should return 0 if str_len is zero");
+}
+
+/****************************** Convert Number ********************************/
+void test_Ascii7Seg_ConvertNum_PositiveNumbers(void)
+{
+   union Ascii7Seg_Encoding_U buf[32];
+   // Test single digit
+   bool result = Ascii7Seg_ConvertNum(5, buf, 1);
+   TEST_ASSERT_TRUE(result);
+   TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)'5'], &buf[0], sizeof(buf[0]));
+
+   // Test multi-digit
+   result = Ascii7Seg_ConvertNum(123, buf, 3);
+   TEST_ASSERT_TRUE(result);
+   TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)'1'], &buf[0], sizeof(buf[0]));
+   TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)'2'], &buf[1], sizeof(buf[1]));
+   TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)'3'], &buf[2], sizeof(buf[2]));
+
+   // Test zero
+   result = Ascii7Seg_ConvertNum(0, buf, 1);
+   TEST_ASSERT_TRUE(result);
+   TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)'0'], &buf[0], sizeof(buf[0]));
+}
+
+void test_Ascii7Seg_ConvertNum_NegativeNumbers(void)
+{
+   union Ascii7Seg_Encoding_U buf[32];
+   // Test negative single digit
+   bool result = Ascii7Seg_ConvertNum(-7, buf, 2);
+   TEST_ASSERT_TRUE(result);
+   TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)'-'], &buf[0], sizeof(buf[0]));
+   TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)'7'], &buf[1], sizeof(buf[1]));
+
+   // Test negative multi-digit
+   result = Ascii7Seg_ConvertNum(-42, buf, 3);
+   TEST_ASSERT_TRUE(result);
+   TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)'-'], &buf[0], sizeof(buf[0]));
+   TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)'4'], &buf[1], sizeof(buf[1]));
+   TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)'2'], &buf[2], sizeof(buf[2]));
+}
+
+void test_Ascii7Seg_ConvertNum_BufferTooSmall(void)
+{
+   union Ascii7Seg_Encoding_U buf[2];
+   // Needs 3 slots for "-10"
+   bool result = Ascii7Seg_ConvertNum(-10, buf, 2);
+   TEST_ASSERT_FALSE(result);
+
+   // Needs 2 slots for "10"
+   result = Ascii7Seg_ConvertNum(10, buf, 1);
+   TEST_ASSERT_FALSE(result);
+}
+
+void test_Ascii7Seg_ConvertNum_BufLenMoreThanNeeded(void)
+{
+   union Ascii7Seg_Encoding_U buf[5];
+   // Should still succeed
+   bool result = Ascii7Seg_ConvertNum(12, buf, 5);
+   TEST_ASSERT_TRUE(result);
+   TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)'1'], &buf[0], sizeof(buf[0]));
+   TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)'2'], &buf[1], sizeof(buf[0]));
+}
+
+
+void test_Ascii7Seg_ConvertNum_NullBuffer(void)
+{
+   bool result = Ascii7Seg_ConvertNum(123, NULL, 3);
+   TEST_ASSERT_FALSE(result);
+}
+
+void test_Ascii7Seg_ConvertNum_ZeroLengthBuffer(void)
+{
+   union Ascii7Seg_Encoding_U buf[1];
+   bool result = Ascii7Seg_ConvertNum(3, buf, 0);
+   TEST_ASSERT_FALSE(result);
+}
+
+void test_Ascii7Seg_ConvertNum_LargeNumbers(void)
+{
+   union Ascii7Seg_Encoding_U buf[32];
+   // INT64_MAX: 9223372036854775807 (19 digits)
+   bool result = Ascii7Seg_ConvertNum(INT64_MAX, buf, 19);
+   TEST_ASSERT_TRUE(result);
+   const char *max_str = "9223372036854775807";
+   for (size_t i = 0; i < 19; ++i) {
+      TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)max_str[i]], &buf[i], sizeof(buf[0]));
+   }
+
+   // INT64_MIN: -9223372036854775808 (20 chars: '-' + 19 digits)
+   result = Ascii7Seg_ConvertNum(INT64_MIN, buf, 20);
+   TEST_ASSERT_TRUE(result);
+   const char *min_str = "-9223372036854775808";
+   for (size_t i = 0; i < 20; ++i) {
+      TEST_ASSERT_EQUAL_MEMORY(&AsciiEncodingReferenceLookup[(uint8_t)min_str[i]], &buf[i], sizeof(buf[0]));
+   }
 }
 
 /******************************* Is Supported? ********************************/
