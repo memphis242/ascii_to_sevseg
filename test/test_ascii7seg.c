@@ -544,15 +544,7 @@ void test_Ascii7Seg_IsSupportedChar_AllAscii(void)
 {
    for (int c = 0; c <= 127; ++c)
    {
-#ifdef ASCII_7SEG_NUMS_ONLY
-      bool expected = (c >= '0' && c <= '9');
-#elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
-      bool is_digit = (c >= '0' && c <= '9');
-      bool is_error = (c == 'E' || c == 'e' || c == 'R' || c == 'r' || c == 'O' || c == 'o');
-      bool expected = is_digit || is_error;
-#else
       bool expected = helper_IsSupportedChar((char)c);
-#endif
       char msg[2];
       msg[0] = (char)c;
       msg[1] = '\0';
