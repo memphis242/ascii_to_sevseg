@@ -132,7 +132,9 @@ static const union Ascii7Seg_Encoding_U NumLUT[] =
    {  /* 6 */ .segments = { .a = 1, .b = 0, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 } },
    {  /* 7 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 0, .e = 0, .f = 0, .g = 0 } },
    {  /* 8 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 1, .f = 1, .g = 1 } },
-   {  /* 9 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 } } 
+   {  /* 9 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 } },
+   {  /* 9 */ .segments = { .a = 1, .b = 1, .c = 1, .d = 1, .e = 0, .f = 1, .g = 1 } },
+   {  /* - */ .segments = { .a = 0, .b = 0, .c = 0, .d = 0, .e = 0, .f = 0, .g = 1 } }
 };
 
 #endif
@@ -152,7 +154,7 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
 
 #ifdef ASCII_7SEG_NUMS_ONLY
 
-   assert( (ascii_char >= '0') && (ascii_char <= '9') );
+   assert( (ascii_char == '-') || ( (ascii_char >= '0') && (ascii_char <= '9') ) );
 
 #ifdef ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 
@@ -162,11 +164,19 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
    buf->segments.d = !( (ascii_char == '1') || (ascii_char == '4') || (ascii_char == '7') );
    buf->segments.e =  ( (ascii_char == '0') || (ascii_char == '2') || (ascii_char == '6') || (ascii_char == '8') );
    buf->segments.f = !( (ascii_char == '1') || (ascii_char == '2') || (ascii_char == '3') || (ascii_char == '7') );
-   buf->segments.g = !( (ascii_char == '0') || (ascii_char == '1') || (ascii_char == '7') );
+   buf->segments.g = !( (ascii_char == '0') || (ascii_char == '1') || (ascii_char == '7') || (ascii_char == '-') );
 
 #else // Use a lookup table
 
-   *buf = NumLUT[ ascii_char - '0' ];
+   if ( '-' == ascii_char )
+   {
+      // '-' will be the last member of NumLUT
+      *buf = NumLUT[ sizeof(NumLUT)/sizeof(NumLUT[0]) - 1 ];
+   }
+   else
+   {
+      *buf = NumLUT[ ascii_char - '0' ];
+   }
 
 #endif // ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 
@@ -175,7 +185,8 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
    assert( ( (ascii_char >= '0') && (ascii_char <= '9') ) || 
            (ascii_char == 'E') || (ascii_char == 'e') ||
            (ascii_char == 'R') || (ascii_char == 'r') ||
-           (ascii_char == 'O') || (ascii_char == 'o') );
+           (ascii_char == 'O') || (ascii_char == 'o') ||
+           (ascii_char == '-') );
 
 #ifdef ASCII_7SEG_DONT_USE_LOOKUP_TABLE
 
@@ -185,7 +196,7 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
    buf->segments.d = !( (ascii_char == '1') || (ascii_char == '4') || (ascii_char == '7') || (ascii_char == 'R') || (ascii_char == 'r') );
    buf->segments.e =  ( (ascii_char == '0') || (ascii_char == '2') || (ascii_char == '6') || (ascii_char == '8') || (ascii_char > '9') );
    buf->segments.f = !( (ascii_char == '1') || (ascii_char == '2') || (ascii_char == '3') || (ascii_char == '7') || (ascii_char == 'r') || (ascii_char == 'o') );
-   buf->segments.g = !( (ascii_char == '0') || (ascii_char == '1') || (ascii_char == '7') || (ascii_char == 'R') || (ascii_char == 'O') );
+   buf->segments.g = !( (ascii_char == '0') || (ascii_char == '1') || (ascii_char == '7') || (ascii_char == 'R') || (ascii_char == 'O') || (ascii_char == '-') );
 
 #else // Use a lookup table
 
@@ -231,7 +242,15 @@ bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf )
    }
    else
    {
-      *buf = NumLUT[ ascii_char - '0' ];
+      if ( '-' == ascii_char )
+      {
+         // '-' will be the last member of NumLUT
+         *buf = NumLUT[ sizeof(NumLUT)/sizeof(NumLUT[0]) - 1 ];
+      }
+      else
+      {
+         *buf = NumLUT[ ascii_char - '0' ];
+      }
    }
 
 #endif // ASCII_7SEG_DONT_USE_LOOKUP_TABLE
@@ -318,16 +337,18 @@ bool Ascii7Seg_IsSupportedChar( char ascii_char )
 {
 
 #ifdef ASCII_7SEG_NUMS_ONLY
-   if ( (ascii_char < '0') || (ascii_char > '9') )
+   if ( (ascii_char != '-') && ( (ascii_char < '0') || (ascii_char > '9') ) )
 #elif defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
-   if ( (ascii_char < '0')  ||
-        (
-            (ascii_char > '9') &&   // letters start after the nums in ASCII
-            !(
-               (ascii_char == 'E') || (ascii_char == 'e') ||
-               (ascii_char == 'R') || (ascii_char == 'r') ||
-               (ascii_char == 'O') || (ascii_char == 'o')
-            )
+   if ( (ascii_char != '-') &&
+        ( (ascii_char < '0')  ||
+          (
+              (ascii_char > '9') &&   // letters start after the nums in ASCII
+              !(
+                 (ascii_char == 'E') || (ascii_char == 'e') ||
+                 (ascii_char == 'R') || (ascii_char == 'r') ||
+                 (ascii_char == 'O') || (ascii_char == 'o')
+              )
+          )
         )
       )
 #else
