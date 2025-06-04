@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <limits.h>
+#include <stdlib.h>
 #include "ascii7seg.h"
 #include "ascii7seg_config.h"
 
@@ -26,9 +27,11 @@
 
 /* Local Data */
 
-#if !defined(ASCII_7SEG_NUMS_ONLY) && !defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY)
+#if !defined(ASCII_7SEG_NUMS_ONLY) && !defined(ASCII_7SEG_NUMS_AND_ERROR_ONLY) /* && !defined(ASCII_7SEG_DONT_USE_LOOKUP_TABLE) */
 
 /**
+ * @brief LUT for all supported encodings.
+ * 
  * MasterLUT is a lookup table (LUT) containing the 7-segment display encodings
  * for all supported ASCII characters.
  *
@@ -116,6 +119,8 @@ static const union Ascii7Seg_Encoding_U MasterLUT[ CHAR_MAX + 1 ] =
 #elif !defined(ASCII_7SEG_DONT_USE_LOOKUP_TABLE)
 
 /**
+ * @brief LUT for number encodings.
+ *
  * NumLUT is a lookup table (LUT) containing the 7-segment display encodings
  * for the digit ASCII characters. It is part of the lookup table strategy for
  * the variations of this library that don't need the full range of supported
@@ -139,7 +144,32 @@ static const union Ascii7Seg_Encoding_U NumLUT[] =
 
 #endif
 
+#ifdef ASCII_7SEG_DONT_USE_LOOKUP_TABLE
+
+static uint64_t Power10ToThe(uint8_t exp);
+
+#else
+
+/**
+ * @brief Array of powers of 10 as 64-bit unsigned integers.
+ *
+ * This static constant array stores precomputed values of 10 raised to the power of n,
+ * where n is the index in the array. This'll save some computations where applicable.
+ */
+static const uint64_t PowersOf10[] =
+{
+   1LL, 10LL, 100LL, 1000LL, // Thousand 10^3
+   10000LL, 100000LL, 1000000LL, // Million 10^6
+   10000000LL, 100000000LL, 1000000000LL, // Billion 10^9
+   10000000000LL, 100000000000LL, 1000000000000LL, // Trillion 10^12
+   10000000000000LL, 100000000000000LL, 1000000000000000LL, // Quadrillion 10^15 
+   10000000000000000LL, 100000000000000000LL, 1000000000000000000LL // Quintillion 10^18
+};
+
+#endif // ASCII_7SEG_DONT_USE_LOOKUP_TABLE
+
 /* Private Function Prototypes */
+static uint8_t NumOfDigits(int64_t num);
 
 /* Public API Implementations */
 
@@ -314,19 +344,54 @@ bool Ascii7Seg_ConvertNum( int64_t num,
                            union Ascii7Seg_Encoding_U * buf,
                            size_t buf_len )
 {
-   if ( (NULL == buf) || (0 == buf_len) )
+   uint8_t num_digits = NumOfDigits(num);
+   if ( (NULL == buf) || (0 == buf_len) || (buf_len < (size_t)num_digits) )
    {
       return false;
    }
 
    assert(buf_len > 0);
 
-   size_t idx = 0;
+   size_t starting_point = 0;
+   bool conversion = false;
    if ( num < 0 )
    {
-      bool conversion = Ascii7Seg_ConvertChar('-', &buf[0]);
-      if ( !conversion ) return false;
-      idx = 1;
+      conversion = Ascii7Seg_ConvertChar('-', &buf[0]);
+      assert(conversion);
+      starting_point = 1;
+      num_digits--;
+   }
+
+   uint64_t unum = (uint64_t)llabs(num);
+   if ( unum < 10 ) // Early return for single-digit numbers
+   {
+      conversion = Ascii7Seg_ConvertChar((char)unum + '0', &buf[starting_point]);
+      assert(conversion);
+      return true;
+   }
+
+   for ( int pow = (num_digits - 1), idx = (int)starting_point;
+        (idx < (int)buf_len) && (pow >= 0);
+        pow--, idx++ )
+   {
+      uint8_t digit_to_convert;
+      if ( pow == 0 )
+      {
+         digit_to_convert = (uint8_t)(unum % 10);
+      }
+      else
+      {
+#ifdef ASCII_7SEG_DONT_USE_LOOKUP_TABLE
+         digit_to_convert = (uint8_t)((unum / Power10ToThe((uint8_t)pow)) % 10);
+#else
+         digit_to_convert = (uint8_t)((unum / PowersOf10[(size_t)pow]) % 10);
+#endif
+      }
+
+      conversion =
+         Ascii7Seg_ConvertChar( (char)digit_to_convert + '0',
+                                &buf[idx] );
+      assert(conversion);
    }
 
    return true;
@@ -366,3 +431,75 @@ bool Ascii7Seg_IsSupportedChar( char ascii_char )
 
    return true;
 }
+
+/* Private Function Implementations */
+
+/**
+ * @brief Calculates the number of digits in a given 64-bit integer.
+ *
+ * This function determines how many decimal digits are present in the
+ * provided integer value, including handling negative numbers.
+ * 
+ * @note Using division, the function can be made smaller, but division is
+ *       expensive on some microcontroller targets, so I'm opting for the next
+ *       best solution - using comparisons.
+ *
+ * @param num The 64-bit integer whose digits are to be counted.
+ * @return The number of decimal digits in the input number.
+ */
+static uint8_t NumOfDigits(int64_t num)
+{
+   uint8_t num_of_digits = 1;
+
+   uint64_t unum = (uint64_t)llabs(num);
+   if ( unum > 9 )
+   {
+      for ( uint8_t i = 1; i < 20; i++ )
+#ifndef ASCII_7SEG_DONT_USE_LOOKUP_TABLE
+      {
+         if ( unum < PowersOf10[i] ) break;
+         num_of_digits++;
+      }
+#else
+      {
+         if ( unum < Power10ToThe(i) ) break;
+         num_of_digits++;
+      }
+#endif
+   }
+
+   if ( num < 0 ) num_of_digits++;
+
+   assert(num_of_digits <= 20);
+
+   return num_of_digits;
+}
+
+#ifdef ASCII_7SEG_DONT_USE_LOOKUP_TABLE
+
+/**
+ * @brief Calculates 10 raised to the power of the given exponent.
+ *
+ * This function returns the value of 10^exp as a 64-bit unsigned integer.
+ *
+ * @param exp The exponent to which 10 is raised (0 <= exp <= 19).
+ * @return uint64_t The result of 10 raised to the power of exp.
+ */
+static uint64_t Power10ToThe(uint8_t exp)
+{
+   assert( exp < 20 );
+
+   uint64_t ret_val = 1;
+
+   if ( exp > 0 )
+   {
+      for ( uint8_t i = 0; i < exp; i++ )
+      {
+         ret_val *= 10;
+      }
+   }
+
+   return ret_val;
+}
+
+#endif // ASCII_7SEG_DONT_USE_LOOKUP_TABLE

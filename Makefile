@@ -455,7 +455,7 @@ CFLAGS += -DNDEBUG $(COMPILER_OPTIMIZATION_LEVEL_SPEED)
 
 else ifeq ($(BUILD_TYPE), TEST)
 # Flags for gcov
-CFLAGS += -fcondition-coverage -fprofile-arcs -ftest-coverage
+CFLAGS += -fcondition-coverage -fprofile-arcs -ftest-coverage $(COMPILER_OPTIMIZATION_LEVEL_DEBUG)
 
 else ifeq ($(BUILD_TYPE), BENCHMARK)
 CFLAGS += -DNDEBUG $(COMPILER_OPTIMIZATION_LEVEL_SPEED)
