@@ -454,7 +454,7 @@ static uint8_t NumOfDigits(int64_t num)
    uint64_t unum = (uint64_t)llabs(num);
    if ( unum > 9 )
    {
-      for ( uint8_t i = 1; i < 20; i++ )
+      for ( uint8_t i = 1; i < 19; i++ )
 #ifndef ASCII_7SEG_DONT_USE_LOOKUP_TABLE
       {
          if ( unum < PowersOf10[i] ) break;
