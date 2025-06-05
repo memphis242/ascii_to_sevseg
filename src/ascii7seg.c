@@ -353,7 +353,31 @@ bool Ascii7Seg_ConvertNum( int64_t num,
    assert(buf_len > 0);
 
    size_t starting_point = 0;
-   bool conversion = false;
+#if defined(__GNUC__)
+/* -Wunused-but-set-variable suppression:
+* Specifically, the warning is:
+*
+* src/ascii7seg.c: In function 'Ascii7Seg_ConvertNum':
+* src/ascii7seg.c:356:9: warning: variable 'conversion' set but not used [-Wunused-but-set-variable]
+*   356 |    bool conversion;
+*       |         ^~~~~~~~~~
+*
+* This warning only shows up for the release build where I have -DNDEBUG set.
+* The conversion is used in debug builds within the assert statement that follows.
+* I want that assert there for debug and test builds in order to catch any
+* failures to convert digits or '-', because those should 100% work at this point.
+* For the release build, however, the assert lines are optimized out, since
+* -DNDEBUG is enabled to nullify all assert statements, hence the conversion var
+* is no longer used. I am fine with this setup and am good to suppress this warning
+* for these lines.
+*/
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
+   bool conversion;
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
    if ( num < 0 )
    {
       conversion = Ascii7Seg_ConvertChar('-', &buf[0]);
