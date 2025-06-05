@@ -5,20 +5,34 @@
 .PHONY: test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test11 test12
 .PHONY: test
 .PHONY: _test
-.PHONY: test-mcu-builds
+
 .PHONY: lib
 .PHONY: release
+
 .PHONY: libmcu
 .PHONY: libarm
 .PHONY: libarm-nums libarm-numerr libarm-full libarm-nums-bp libarm-numerr-bp libarm-full-bp
 .PHONY: libarm-nums-nolut libarm-numerr-nolut libarm-full-nolut libarm-nums-bp-nolut libarm-numerr-bp-nolut libarm-full-bp-nolut
+.PHONY: mcu-builds
+
+.PHONY: libwx86-64-nums libwx86-64-numerr libwx86-64-full libwx86-64-nums-bp libwx86-64-numerr-bp libwx86-64-full-bp
+.PHONY: libwx86-64-nums-nolut libwx86-64-numerr-nolut libwx86-64-full-nolut libwx86-64-nums-bp-nolut libwx86-64-numerr-bp-nolut libwx86-64-full-bp-nolut
+.PHONY: wx86-64-builds
+
+.PHONY: memstats
+.PHONY: memstats-arm-nums memstats-arm-numerr memstats-arm-full memstats-arm-nums-bp memstats-arm-numerr-bp memstats-arm-full-bp
+.PHONY: memstats-arm-nums-nolut memstats-arm-numerr-nolut memstats-arm-full-nolut memstats-arm-nums-bp-nolut memstats-arm-numerr-bp-nolut memstats-arm-full-bp-nolut
+.PHONY: memstats-arm-all
+
 .PHONY: unity_static_analysis
+
 .PHONY: clean
 
 BUILD_TYPE ?= RELEASE
 REL_SUBDIR ?=
 
-# Target to run a test build for every config combo
+########################################################################################################################
+
 test:
 	@echo -e "Test 1: \033[35mnumbers only version\033[0m /w other defaults..."
 	@$(MAKE) --always-make test1 > /dev/null
@@ -63,13 +77,13 @@ test1:
 	@echo "----------------------------------------"
 	@echo -e "Test 1: \033[35mnumbers only version\033[0m /w other defaults..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY _test
+	@$(MAKE) BUILD_TYPE=TEST CHAR_RANGE=NUMS_ONLY _test
 
 test2:
 	@echo "----------------------------------------"
 	@echo -e "Test 2: \033[35mnumbers + 'error' version\033[0m /w other defaults..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY _test
+	@$(MAKE) BUILD_TYPE=TEST CHAR_RANGE=NUMS_AND_ERROR_ONLY _test
 
 test3:
 	@echo "----------------------------------------"
@@ -81,13 +95,13 @@ test4:
 	@echo "----------------------------------------"
 	@echo -e "Test 4: \033[35mnumbers only version\033[0m /w \033[34mbit packing\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY BIT_PACK=1 _test
+	@$(MAKE) BUILD_TYPE=TEST CHAR_RANGE=NUMS_ONLY BIT_PACK=1 _test
 
 test5:
 	@echo "----------------------------------------"
 	@echo -e "Test 5: \033[35mnumbers + 'error' version\033[0m /w \033[34mbit packing\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 _test
+	@$(MAKE) BUILD_TYPE=TEST CHAR_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 _test
 
 test6:
 	@echo "----------------------------------------"
@@ -99,13 +113,13 @@ test7:
 	@echo "----------------------------------------"
 	@echo -e "Test 7: \033[35mnumbers only version\033[0m \033[34m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY NO_LUT=1 _test
+	@$(MAKE) BUILD_TYPE=TEST CHAR_RANGE=NUMS_ONLY NO_LUT=1 _test
 
 test8:
 	@echo "----------------------------------------"
 	@echo -e "Test 8: \033[35mnumbers + 'error' version\033[0m \033[34m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY NO_LUT=1 _test
+	@$(MAKE) BUILD_TYPE=TEST CHAR_RANGE=NUMS_AND_ERROR_ONLY NO_LUT=1 _test
 
 test9:
 	@echo "----------------------------------------"
@@ -117,19 +131,21 @@ test10:
 	@echo "----------------------------------------"
 	@echo -e "Test 10: \033[35mnumbers only version\033[0m with \033[34mbit packing\033[0m \033[36m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_ONLY BIT_PACK=1 NO_LUT=1 _test
+	@$(MAKE) BUILD_TYPE=TEST CHAR_RANGE=NUMS_ONLY BIT_PACK=1 NO_LUT=1 _test
 
 test11:
 	@echo "----------------------------------------"
 	@echo -e "Test 11: \033[35mnumbers + 'error' version\033[0m with \033[34mbit packing\033[0m \033[36m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
-	@$(MAKE) BUILD_TYPE=TEST TEST_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 NO_LUT=1 _test
+	@$(MAKE) BUILD_TYPE=TEST CHAR_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 NO_LUT=1 _test
 
 test12:
 	@echo "----------------------------------------"
 	@echo -e "Test 12: \033[35mcomplete version\033[0m with \033[34mbit packing\033[0m \033[36m/wo LUT\033[0m..."
 	@echo "----------------------------------------"
 	@$(MAKE) BUILD_TYPE=TEST BIT_PACK=1 NO_LUT=1 _test
+
+########################################################################################################################
 
 mcu-builds:
 	@echo -e "\033[35mMCU test build 1\033[0m (defaults)..."
@@ -166,37 +182,37 @@ libarm:
 	@$(MAKE) libarm-nums BUILD_TYPE=RELEASE
 
 libarm-nums:
-	$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_ONLY BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums
+	$(MAKE) lib CROSS=arm-none-eabi- CHAR_RANGE=NUMS_ONLY BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums
 
 libarm-numerr:
-	@$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_AND_ERROR_ONLY BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr
+	@$(MAKE) lib CROSS=arm-none-eabi- CHAR_RANGE=NUMS_AND_ERROR_ONLY BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr
 
 libarm-full:
 	@$(MAKE) lib CROSS=arm-none-eabi- BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-full
 
 libarm-nums-bp:
-	$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_ONLY BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums-bp
+	$(MAKE) lib CROSS=arm-none-eabi- CHAR_RANGE=NUMS_ONLY BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums-bp
 
 libarm-numerr-bp:
-	$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr-bp
+	$(MAKE) lib CROSS=arm-none-eabi- CHAR_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr-bp
 
 libarm-full-bp:
 	$(MAKE) lib CROSS=arm-none-eabi- BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-full-bp
 
 libarm-nums-nolut:
-	$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_ONLY NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums-nolut
+	$(MAKE) lib CROSS=arm-none-eabi- CHAR_RANGE=NUMS_ONLY NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums-nolut
 
 libarm-numerr-nolut:
-	@$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_AND_ERROR_ONLY NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr-nolut
+	@$(MAKE) lib CROSS=arm-none-eabi- CHAR_RANGE=NUMS_AND_ERROR_ONLY NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr-nolut
 
 libarm-full-nolut:
 	@$(MAKE) lib CROSS=arm-none-eabi- NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-full-nolut
 
 libarm-nums-bp-nolut:
-	$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_ONLY BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums-bp-nolut
+	$(MAKE) lib CROSS=arm-none-eabi- CHAR_RANGE=NUMS_ONLY BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums-bp-nolut
 
 libarm-numerr-bp-nolut:
-	$(MAKE) lib CROSS=arm-none-eabi- TEST_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr-bp-nolut
+	$(MAKE) lib CROSS=arm-none-eabi- CHAR_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr-bp-nolut
 
 libarm-full-bp-nolut:
 	$(MAKE) lib CROSS=arm-none-eabi- BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-full-bp-nolut
@@ -204,7 +220,9 @@ libarm-full-bp-nolut:
 libarm-lazy:
 	@echo "----------------------------------------"
 	@echo -e "Building for an \033[35mARM target\033[0m..."
-	$(MAKE) lib CROSS=arm-none-eabi- BUILD_TYPE=RELEASE
+	$(MAKE) lib CROSS=arm-none-eabi- BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-defaults
+
+########################################################################################################################
 
 wx86-64-builds:
 	@echo -e "\033[35mWindows x86-64 test build 1\033[0m (defaults)..."
@@ -235,40 +253,111 @@ wx86-64-builds:
 	@$(MAKE) --always-make libwx86-64-full-bp-nolut > /dev/null
 
 libwx86-64-nums:
-	$(MAKE) lib TEST_RANGE=NUMS_ONLY BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-nums
+	$(MAKE) lib CHAR_RANGE=NUMS_ONLY BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-nums
 
 libwx86-64-numerr:
-	@$(MAKE) lib TEST_RANGE=NUMS_AND_ERROR_ONLY BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-numerr
+	@$(MAKE) lib CHAR_RANGE=NUMS_AND_ERROR_ONLY BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-numerr
 
 libwx86-64-full:
 	@$(MAKE) lib BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-full
 
 libwx86-64-nums-bp:
-	$(MAKE) lib TEST_RANGE=NUMS_ONLY BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-nums-bp
+	$(MAKE) lib CHAR_RANGE=NUMS_ONLY BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-nums-bp
 
 libwx86-64-numerr-bp:
-	$(MAKE) lib TEST_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-numerr-bp
+	$(MAKE) lib CHAR_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-numerr-bp
 
 libwx86-64-full-bp:
 	$(MAKE) lib BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-full-bp
 
 libwx86-64-nums-nolut:
-	$(MAKE) lib TEST_RANGE=NUMS_ONLY NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-nums-nolut
+	$(MAKE) lib CHAR_RANGE=NUMS_ONLY NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-nums-nolut
 
 libwx86-64-numerr-nolut:
-	@$(MAKE) lib TEST_RANGE=NUMS_AND_ERROR_ONLY NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-numerr-nolut
+	@$(MAKE) lib CHAR_RANGE=NUMS_AND_ERROR_ONLY NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-numerr-nolut
 
 libwx86-64-full-nolut:
 	@$(MAKE) lib NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-full-nolut
 
 libwx86-64-nums-bp-nolut:
-	$(MAKE) lib TEST_RANGE=NUMS_ONLY BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-nums-bp-nolut
+	$(MAKE) lib CHAR_RANGE=NUMS_ONLY BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-nums-bp-nolut
 
 libwx86-64-numerr-bp-nolut:
-	$(MAKE) lib TEST_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-numerr-bp-nolut
+	$(MAKE) lib CHAR_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-numerr-bp-nolut
 
 libwx86-64-full-bp-nolut:
 	$(MAKE) lib BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-full-bp-nolut
+
+########################################################################################################################
+
+memstats-arm-all:
+	@echo -e "\033[35mMCU mem stats 1\033[0m (defaults)..."
+	@$(MAKE) --always-make memstats-arm-lazy
+	@echo -e "\033[35mMCU mem stats 2\033[0m (nums only, default spacing)..."
+	@$(MAKE) --always-make memstats-arm-nums
+	@echo -e "\033[35mMCU mem stats 3\033[0m (nums+err, default spacing)..."
+	@$(MAKE) --always-make memstats-arm-numerr
+	@echo -e "\033[35mMCU mem stats 4\033[0m (full rng, default spacing)..."
+	@$(MAKE) --always-make memstats-arm-full
+	@echo -e "\033[35mMCU mem stats 5\033[0m (nums only, bit-packed)..."
+	@$(MAKE) --always-make memstats-arm-nums-bp
+	@echo -e "\033[35mMCU mem stats 6\033[0m (nums+err, default spacing)..."
+	@$(MAKE) --always-make memstats-arm-numerr-bp
+	@echo -e "\033[35mMCU mem stats 7\033[0m (full rng, default spacing)..."
+	@$(MAKE) --always-make memstats-arm-full-bp
+	@echo -e "\033[35mMCU mem stats 8\033[0m (nums only, default spacing, no lut)..."
+	@$(MAKE) --always-make memstats-arm-nums-nolut
+	@echo -e "\033[35mMCU mem stats 9\033[0m (nums+err, default spacing, no lut)..."
+	@$(MAKE) --always-make memstats-arm-numerr-nolut
+	@echo -e "\033[35mMCU mem stats 10\033[0m (full rng, default spacing, no lut)..."
+	@$(MAKE) --always-make memstats-arm-full-nolut
+	@echo -e "\033[35mMCU mem stats 11\033[0m (nums only, bit packed, no lut)..."
+	@$(MAKE) --always-make memstats-arm-nums-bp-nolut
+	@echo -e "\033[35mMCU mem stats 12\033[0m (nums+err, bit packed, no lut)..."
+	@$(MAKE) --always-make memstats-arm-numerr-bp-nolut
+	@echo -e "\033[35mMCU mem stats 13\033[0m (full rng, bit packed, no lut)..."
+	@$(MAKE) --always-make memstats-arm-full-bp-nolut
+
+memstats-arm-nums:
+	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_ONLY BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums
+
+memstats-arm-nums-bp:
+	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_ONLY BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums-bp
+
+memstats-arm-nums-nolut:
+	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_ONLY NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums-nolut
+
+memstats-arm-nums-bp-nolut:
+	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_ONLY BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums-bp-nolut
+
+memstats-arm-numerr:
+	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_AND_ERROR_ONLY BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr
+
+memstats-arm-numerr-bp:
+	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr-bp
+
+memstats-arm-numerr-nolut:
+	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_AND_ERROR_ONLY NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr-nolut
+
+memstats-arm-numerr-bp-nolut:
+	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr-bp-nolut
+
+memstats-arm-full:
+	$(MAKE) memstats CROSS=arm-none-eabi- BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-full
+
+memstats-arm-full-bp:
+	$(MAKE) memstats CROSS=arm-none-eabi- BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-full-bp
+
+memstats-arm-full-nolut:
+	$(MAKE) memstats CROSS=arm-none-eabi- NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-full-nolut
+
+memstats-arm-full-bp-nolut:
+	$(MAKE) memstats CROSS=arm-none-eabi- BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-full-bp-nolut
+
+memstats-arm-lazy:
+	$(MAKE) memstats CROSS=arm-none-eabi- BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-defaults
+
+########################################################################################################################
 
 CLEANUP = rm -f
 MKDIR = mkdir -p
@@ -337,7 +426,7 @@ else
 endif
 LIB_OBJ_FILES = $(patsubst %.c, $(PATH_OBJECT_FILES)%.o, $(notdir $(SRC_FILES)))
 TEST_EXECUTABLES = $(PATH_BUILD)test_$(LIB_NAME).$(TARGET_EXTENSION)
-LIB_LIST_FILE = $(patsubst %.$(STATIC_LIB_EXTENSION), $(PATH_BUILD)%.lst, $(notdir $(LIB_FILE)))
+LIB_LIST_FILE = $(LIB_FILE:.$(STATIC_LIB_EXTENSION)=.lst)
 TEST_LIST_FILE = $(patsubst %.$(TARGET_EXTENSION), $(PATH_BUILD)%.lst, $(notdir $(TEST_EXECUTABLES)))
 TEST_OBJ_FILES = $(patsubst %.c, $(PATH_OBJECT_FILES)%.o, $(notdir $(SRC_TEST_FILES)))
 RESULTS = $(patsubst %.$(TARGET_EXTENSION), $(PATH_RESULTS)%.txt, $(notdir $(TEST_EXECUTABLES)))
@@ -397,9 +486,9 @@ INCLUDE_PATHS = -I. -I$(PATH_INC) -I$(PATH_UNITY)
 TEST_DEFINES ?=
 
 COMMON_DEFINES =
-ifeq ($(TEST_RANGE), NUMS_ONLY)
+ifeq ($(CHAR_RANGE), NUMS_ONLY)
   COMMON_DEFINES += -DASCII_7SEG_NUMS_ONLY
-else ifeq ($(TEST_RANGE), NUMS_AND_ERROR_ONLY)
+else ifeq ($(CHAR_RANGE), NUMS_AND_ERROR_ONLY)
   COMMON_DEFINES += -DASCII_7SEG_NUMS_AND_ERROR_ONLY
 endif
 ifdef BIT_PACK
@@ -588,6 +677,18 @@ $(PATH_SRC)%.c.gcov: $(PATH_SRC)%.c $(PATH_INC)%.h
 	$(GCOV) $(GCOV_FLAGS) --object-directory $(PATH_OBJECT_FILES:%/=%) $< > $(PATH_RESULTS)$(GCOV_CONSOLE_OUT_FILE)
 	mv *.gcov $(PATH_RESULTS)
 	gcovr $(GCOVR_FLAGS)
+	@echo
+
+#################### Profiling/Benchmarking ######################
+
+memstats: $(LIB_FILE)
+	@echo
+	@echo "----------------------------------------"
+	@echo -e "\033[36mAnalyzing memory stats\033[0m for $<..."
+	@echo
+	$(CROSS)size $<
+	@echo
+	$(CROSS)nm -S --size-sort $<
 	@echo
 
 ######################### Miscellaneous ##########################
