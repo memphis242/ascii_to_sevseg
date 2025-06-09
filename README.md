@@ -47,6 +47,13 @@ In the near future, I will place the various build artifacts produced here into 
 
 ## Profiling & Benchmarking Space + Speed
 TODO
+### Memory Comparisons
+View the markdown file example comparisons below. Note that the specific numbers for your target may differ, but the information is nonetheless useful.
+- Windows Build: [`Benchmark_MemCmpTbl_Windows.md`](./Benchmark_MemCmpTbl_Windows.md)
+- Arm Cortex-M0+: [`Benchmark_MemCmpTbl_ArmCortexM0Plus.md`](./Benchmark_MemCmpTbl_ArmCortexM0Plus.md)
+
+### Speed Comparison
+
 
 ## Code Quality
 Please see the [`CODING_PRINCIPLES.md`](./CODING_PRINCIPLES.md) file for my philosophy and the software engineering principles/practices that help me produce what I see as quality code.
