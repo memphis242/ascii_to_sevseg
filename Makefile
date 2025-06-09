@@ -292,70 +292,168 @@ libwx86-64-full-bp-nolut:
 
 memstats-arm-all:
 	@echo -e "\033[35mMCU mem stats 1\033[0m (defaults)..."
-	@$(MAKE) --always-make memstats-arm-lazy
+	@$(MAKE) --always-make memstats-arm-lazy MEMSTATS_TO_FILE=1
 	@echo -e "\033[35mMCU mem stats 2\033[0m (nums only, default spacing)..."
-	@$(MAKE) --always-make memstats-arm-nums
+	@$(MAKE) --always-make memstats-arm-nums MEMSTATS_TO_FILE=1
 	@echo -e "\033[35mMCU mem stats 3\033[0m (nums+err, default spacing)..."
-	@$(MAKE) --always-make memstats-arm-numerr
+	@$(MAKE) --always-make memstats-arm-numerr MEMSTATS_TO_FILE=1
 	@echo -e "\033[35mMCU mem stats 4\033[0m (full rng, default spacing)..."
-	@$(MAKE) --always-make memstats-arm-full
+	@$(MAKE) --always-make memstats-arm-full MEMSTATS_TO_FILE=1
 	@echo -e "\033[35mMCU mem stats 5\033[0m (nums only, bit-packed)..."
-	@$(MAKE) --always-make memstats-arm-nums-bp
+	@$(MAKE) --always-make memstats-arm-nums-bp MEMSTATS_TO_FILE=1
 	@echo -e "\033[35mMCU mem stats 6\033[0m (nums+err, default spacing)..."
-	@$(MAKE) --always-make memstats-arm-numerr-bp
+	@$(MAKE) --always-make memstats-arm-numerr-bp MEMSTATS_TO_FILE=1
 	@echo -e "\033[35mMCU mem stats 7\033[0m (full rng, default spacing)..."
-	@$(MAKE) --always-make memstats-arm-full-bp
+	@$(MAKE) --always-make memstats-arm-full-bp MEMSTATS_TO_FILE=1
 	@echo -e "\033[35mMCU mem stats 8\033[0m (nums only, default spacing, no lut)..."
-	@$(MAKE) --always-make memstats-arm-nums-nolut
+	@$(MAKE) --always-make memstats-arm-nums-nolut MEMSTATS_TO_FILE=1
 	@echo -e "\033[35mMCU mem stats 9\033[0m (nums+err, default spacing, no lut)..."
-	@$(MAKE) --always-make memstats-arm-numerr-nolut
+	@$(MAKE) --always-make memstats-arm-numerr-nolut MEMSTATS_TO_FILE=1
 	@echo -e "\033[35mMCU mem stats 10\033[0m (full rng, default spacing, no lut)..."
-	@$(MAKE) --always-make memstats-arm-full-nolut
+	@$(MAKE) --always-make memstats-arm-full-nolut MEMSTATS_TO_FILE=1
 	@echo -e "\033[35mMCU mem stats 11\033[0m (nums only, bit packed, no lut)..."
-	@$(MAKE) --always-make memstats-arm-nums-bp-nolut
+	@$(MAKE) --always-make memstats-arm-nums-bp-nolut MEMSTATS_TO_FILE=1
 	@echo -e "\033[35mMCU mem stats 12\033[0m (nums+err, bit packed, no lut)..."
-	@$(MAKE) --always-make memstats-arm-numerr-bp-nolut
+	@$(MAKE) --always-make memstats-arm-numerr-bp-nolut MEMSTATS_TO_FILE=1
 	@echo -e "\033[35mMCU mem stats 13\033[0m (full rng, bit packed, no lut)..."
-	@$(MAKE) --always-make memstats-arm-full-bp-nolut
+	@$(MAKE) --always-make memstats-arm-full-bp-nolut MEMSTATS_TO_FILE=1
+	@echo -e "\033[32;1mAll done!\033[0m"
 
 memstats-arm-nums:
 	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_ONLY BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums
+	@echo -e "\033[32;1mDone!\033[0m"
 
 memstats-arm-nums-bp:
 	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_ONLY BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums-bp
+	@echo -e "\033[32;1mDone!\033[0m"
 
 memstats-arm-nums-nolut:
 	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_ONLY NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums-nolut
+	@echo -e "\033[32;1mDone!\033[0m"
 
 memstats-arm-nums-bp-nolut:
 	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_ONLY BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-nums-bp-nolut
+	@echo -e "\033[32;1mDone!\033[0m"
 
 memstats-arm-numerr:
 	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_AND_ERROR_ONLY BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr
+	@echo -e "\033[32;1mDone!\033[0m"
 
 memstats-arm-numerr-bp:
 	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr-bp
+	@echo -e "\033[32;1mDone!\033[0m"
 
 memstats-arm-numerr-nolut:
 	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_AND_ERROR_ONLY NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr-nolut
+	@echo -e "\033[32;1mDone!\033[0m"
 
 memstats-arm-numerr-bp-nolut:
 	$(MAKE) memstats CROSS=arm-none-eabi- CHAR_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-numerr-bp-nolut
+	@echo -e "\033[32;1mDone!\033[0m"
 
 memstats-arm-full:
 	$(MAKE) memstats CROSS=arm-none-eabi- BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-full
+	@echo -e "\033[32;1mDone!\033[0m"
 
 memstats-arm-full-bp:
 	$(MAKE) memstats CROSS=arm-none-eabi- BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-full-bp
+	@echo -e "\033[32;1mDone!\033[0m"
 
 memstats-arm-full-nolut:
 	$(MAKE) memstats CROSS=arm-none-eabi- NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-full-nolut
+	@echo -e "\033[32;1mDone!\033[0m"
 
 memstats-arm-full-bp-nolut:
 	$(MAKE) memstats CROSS=arm-none-eabi- BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-full-bp-nolut
+	@echo -e "\033[32;1mDone!\033[0m"
 
 memstats-arm-lazy:
 	$(MAKE) memstats CROSS=arm-none-eabi- BUILD_TYPE=RELEASE REL_SUBDIR=arm-m0plus-defaults
+	@echo -e "\033[32;1mDone!\033[0m"
+
+########################################################################################################################
+
+memstats-wx86-64-all:
+	@echo -e "\033[35mMCU mem stats 1\033[0m (defaults)..."
+	@$(MAKE) --always-make memstats-wx86-64-lazy MEMSTATS_TO_FILE=1
+	@echo -e "\033[35mMCU mem stats 2\033[0m (nums only, default spacing)..."
+	@$(MAKE) --always-make memstats-wx86-64-nums MEMSTATS_TO_FILE=1
+	@echo -e "\033[35mMCU mem stats 3\033[0m (nums+err, default spacing)..."
+	@$(MAKE) --always-make memstats-wx86-64-numerr MEMSTATS_TO_FILE=1
+	@echo -e "\033[35mMCU mem stats 4\033[0m (full rng, default spacing)..."
+	@$(MAKE) --always-make memstats-wx86-64-full MEMSTATS_TO_FILE=1
+	@echo -e "\033[35mMCU mem stats 5\033[0m (nums only, bit-packed)..."
+	@$(MAKE) --always-make memstats-wx86-64-nums-bp MEMSTATS_TO_FILE=1
+	@echo -e "\033[35mMCU mem stats 6\033[0m (nums+err, default spacing)..."
+	@$(MAKE) --always-make memstats-wx86-64-numerr-bp MEMSTATS_TO_FILE=1
+	@echo -e "\033[35mMCU mem stats 7\033[0m (full rng, default spacing)..."
+	@$(MAKE) --always-make memstats-wx86-64-full-bp MEMSTATS_TO_FILE=1
+	@echo -e "\033[35mMCU mem stats 8\033[0m (nums only, default spacing, no lut)..."
+	@$(MAKE) --always-make memstats-wx86-64-nums-nolut MEMSTATS_TO_FILE=1
+	@echo -e "\033[35mMCU mem stats 9\033[0m (nums+err, default spacing, no lut)..."
+	@$(MAKE) --always-make memstats-wx86-64-numerr-nolut MEMSTATS_TO_FILE=1
+	@echo -e "\033[35mMCU mem stats 10\033[0m (full rng, default spacing, no lut)..."
+	@$(MAKE) --always-make memstats-wx86-64-full-nolut MEMSTATS_TO_FILE=1
+	@echo -e "\033[35mMCU mem stats 11\033[0m (nums only, bit packed, no lut)..."
+	@$(MAKE) --always-make memstats-wx86-64-nums-bp-nolut MEMSTATS_TO_FILE=1
+	@echo -e "\033[35mMCU mem stats 12\033[0m (nums+err, bit packed, no lut)..."
+	@$(MAKE) --always-make memstats-wx86-64-numerr-bp-nolut MEMSTATS_TO_FILE=1
+	@echo -e "\033[35mMCU mem stats 13\033[0m (full rng, bit packed, no lut)..."
+	@$(MAKE) --always-make memstats-wx86-64-full-bp-nolut MEMSTATS_TO_FILE=1
+	python scripts/mem_cmp_table.py
+	@echo -e "\033[32;1mAll done!\033[0m"
+
+memstats-wx86-64-nums:
+	$(MAKE) memstats CHAR_RANGE=NUMS_ONLY BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-nums
+	@echo -e "\033[32;1mDone!\033[0m"
+
+memstats-wx86-64-nums-bp:
+	$(MAKE) memstats CHAR_RANGE=NUMS_ONLY BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-nums-bp
+	@echo -e "\033[32;1mDone!\033[0m"
+
+memstats-wx86-64-nums-nolut:
+	$(MAKE) memstats CHAR_RANGE=NUMS_ONLY NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-nums-nolut
+	@echo -e "\033[32;1mDone!\033[0m"
+
+memstats-wx86-64-nums-bp-nolut:
+	$(MAKE) memstats CHAR_RANGE=NUMS_ONLY BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-nums-bp-nolut
+	@echo -e "\033[32;1mDone!\033[0m"
+
+memstats-wx86-64-numerr:
+	$(MAKE) memstats CHAR_RANGE=NUMS_AND_ERROR_ONLY BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-numerr
+	@echo -e "\033[32;1mDone!\033[0m"
+
+memstats-wx86-64-numerr-bp:
+	$(MAKE) memstats CHAR_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-numerr-bp
+	@echo -e "\033[32;1mDone!\033[0m"
+
+memstats-wx86-64-numerr-nolut:
+	$(MAKE) memstats CHAR_RANGE=NUMS_AND_ERROR_ONLY NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-numerr-nolut
+	@echo -e "\033[32;1mDone!\033[0m"
+
+memstats-wx86-64-numerr-bp-nolut:
+	$(MAKE) memstats CHAR_RANGE=NUMS_AND_ERROR_ONLY BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-numerr-bp-nolut
+	@echo -e "\033[32;1mDone!\033[0m"
+
+memstats-wx86-64-full:
+	$(MAKE) memstats BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-full
+	@echo -e "\033[32;1mDone!\033[0m"
+
+memstats-wx86-64-full-bp:
+	$(MAKE) memstats BIT_PACK=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-full-bp
+	@echo -e "\033[32;1mDone!\033[0m"
+
+memstats-wx86-64-full-nolut:
+	$(MAKE) memstats NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-full-nolut
+	@echo -e "\033[32;1mDone!\033[0m"
+
+memstats-wx86-64-full-bp-nolut:
+	$(MAKE) memstats BIT_PACK=1 NO_LUT=1 BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-full-bp-nolut
+	@echo -e "\033[32;1mDone!\033[0m"
+
+memstats-wx86-64-lazy:
+	$(MAKE) memstats BUILD_TYPE=RELEASE REL_SUBDIR=wx86-64-defaults
+	@echo -e "\033[32;1mDone!\033[0m"
 
 ########################################################################################################################
 
@@ -397,11 +495,12 @@ PATH_BUILD        = build/
 PATH_OBJECT_FILES = $(PATH_BUILD)objs/
 PATH_RESULTS      = $(PATH_BUILD)results/
 PATH_PROFILE      = $(PATH_BUILD)profile/
-PATH_BENCHMARK	   = benchmark/
+PATH_BENCHMARK    = benchmark/
 PATH_SCRIPTS      = scripts/
-PATH_RELEASE		= $(PATH_BUILD)release/
-PATH_DEBUG			= $(PATH_BUILD)debug/
-BUILD_DIRS        = $(PATH_BUILD) $(PATH_OBJECT_FILES) $(PATH_RELEASE) $(PATH_DEBUG) $(PATH_RELEASE)$(REL_SUBDIR)
+PATH_RELEASE      = $(PATH_BUILD)release/
+PATH_DEBUG        = $(PATH_BUILD)debug/
+PATH_MEMSTATS     = $(PATH_BUILD)memstats/
+BUILD_DIRS        = $(PATH_BUILD) $(PATH_OBJECT_FILES) $(PATH_RELEASE) $(PATH_DEBUG) $(PATH_RELEASE)$(REL_SUBDIR) $(PATH_MEMSTATS)
 
 # Lists of files
 # The pattern employed here is to generate lists of files which shall then be
@@ -630,7 +729,7 @@ $(PATH_BUILD)%.$(TARGET_EXTENSION): $(TEST_OBJ_FILES) $(UNITY_OBJ_FILES) $(LIB_F
 # Separate rules for the object files that belong to test files, Unity files,
 # and module source files. This is primarily because I want different warning
 # configurations.
-$(PATH_OBJECT_FILES)%.o: $(PATH_TEST_FILES)%.c
+$(PATH_OBJECT_FILES)%.o: $(PATH_TEST_FILES)%.c $(BUILD_DIRS)
 	@echo
 	@echo "----------------------------------------"
 	@echo -e "\033[36mCompiling\033[0m the test file: $<..."
@@ -640,7 +739,7 @@ $(PATH_OBJECT_FILES)%.o: $(PATH_TEST_FILES)%.c
 
 # Suppress -Wfloat-equal just for unity.c because I don't own that file...
 # FIXME: Submit a PR/ticket to ThrowTheSwitch/Unity for this.
-$(PATH_OBJECT_FILES)%.o: $(PATH_UNITY)%.c $(PATH_UNITY)%.h
+$(PATH_OBJECT_FILES)%.o: $(PATH_UNITY)%.c $(PATH_UNITY)%.h $(BUILD_DIRS)
 	@echo
 	@echo "----------------------------------------"
 	@echo -e "\033[36mCompiling\033[0m the unity file: $<..."
@@ -648,7 +747,7 @@ $(PATH_OBJECT_FILES)%.o: $(PATH_UNITY)%.c $(PATH_UNITY)%.h
 	$(CC) -c $(CFLAGS_TEST_FILES) -Wno-float-equal $< -o $@
 	@echo
 
-$(PATH_OBJECT_FILES)%.o : $(PATH_SRC)%.c $(PATH_INC)%.h
+$(PATH_OBJECT_FILES)%.o : $(PATH_SRC)%.c $(PATH_INC)%.h $(BUILD_DIRS)
 	@echo
 	@echo "----------------------------------------"
 	@echo -e "\033[36mCompiling\033[0m the primary source file: $<..."
@@ -670,7 +769,7 @@ $(PATH_OBJECT_FILES)%.o : $(PATH_SRC)%.c $(PATH_INC)%.h
 # Also, I've redirected gcov's output because I want to prioritize viewing the
 # unit test results. Coverage results are meant to be inspected manually rather
 # than fed back immediately to the developer.
-$(PATH_SRC)%.c.gcov: $(PATH_SRC)%.c $(PATH_INC)%.h
+$(PATH_SRC)%.c.gcov: $(PATH_SRC)%.c $(PATH_INC)%.h $(BUILD_DIRS)
 	@echo
 	@echo "----------------------------------------"
 	@echo -e "\033[36mAnalyzing coverage\033[0m for $<..."
@@ -681,6 +780,18 @@ $(PATH_SRC)%.c.gcov: $(PATH_SRC)%.c $(PATH_INC)%.h
 
 #################### Profiling/Benchmarking ######################
 
+ifdef MEMSTATS_TO_FILE
+memstats: $(LIB_FILE)
+	@echo
+	@echo "----------------------------------------"
+	@echo -e "\033[36mAnalyzing memory stats\033[0m for $<..."
+	@echo
+	$(CROSS)size $< > $(PATH_MEMSTATS)memstats_$(REL_SUBDIR).log
+	@echo
+	$(CROSS)nm -S --size-sort $< >> $(PATH_MEMSTATS)memstats_$(REL_SUBDIR).log
+	@echo
+
+else
 memstats: $(LIB_FILE)
 	@echo
 	@echo "----------------------------------------"
@@ -690,6 +801,8 @@ memstats: $(LIB_FILE)
 	@echo
 	$(CROSS)nm -S --size-sort $<
 	@echo
+
+endif
 
 ######################### Miscellaneous ##########################
 
@@ -717,7 +830,12 @@ $(PATH_PROFILE):
 
 $(PATH_RELEASE):
 	$(MKDIR) $@
-	$(MKDIR) $@$(REL_SUBDIR)
+
+$(PATH_RELEASE)$(REL_SUBDIR): $(PATH_RELEASE)
+	$(MKDIR) $@
+
+$(PATH_MEMSTATS):
+	$(MKDIR) $@
 
 $(PATH_DEBUG):
 	$(MKDIR) $@
@@ -728,6 +846,7 @@ clean:
 	$(CLEANUP) $(PATH_OBJECT_FILES)*.o
 	$(CLEANUP) $(PATH_OBJECT_FILES)*.gcda
 	$(CLEANUP) $(PATH_OBJECT_FILES)*.gcno
+	$(CLEANUP) $(PATH_OBJECT_FILES)*.su
 	$(CLEANUP) $(PATH_BUILD)*.$(TARGET_EXTENSION)
 	$(CLEANUP) $(PATH_RESULTS)*.txt
 	$(CLEANUP) $(PATH_RESULTS)*.html
@@ -741,30 +860,14 @@ clean:
 	$(CLEANUP) $(PATH_BUILD)*.lib
 	$(CLEANUP) $(PATH_BUILD)*.lst
 	$(CLEANUP) $(PATH_BUILD)*.log
+	$(CLEANUP) $(PATH_BUILD)*.md
 	$(CLEANUP) $(PATH_BUILD)*.$(STATIC_LIB_EXTENSION)
 	$(CLEANUP) $(PATH_BUILD)*.$(TARGET_EXTENSION)
 	$(CLEANUP) $(PATH_BUILD)*.bin
 	$(CLEANUP) $(PATH_BUILD)*.hex
-	$(CLEANUP) $(PATH_RELEASE)*.o
-	$(CLEANUP) $(PATH_RELEASE)*.exe
-	$(CLEANUP) $(PATH_RELEASE)*.out
-	$(CLEANUP) $(PATH_RELEASE)*.a
-	$(CLEANUP) $(PATH_RELEASE)*.lib
-	$(CLEANUP) $(PATH_RELEASE)*.bin
-	$(CLEANUP) $(PATH_RELEASE)*.hex
-	$(CLEANUP) $(PATH_RELEASE)$(REL_SUBDIR)*.a
-	$(CLEANUP) $(PATH_RELEASE)$(REL_SUBDIR)*.lib
-	$(CLEANUP) $(PATH_DEBUG)*.o
-	$(CLEANUP) $(PATH_DEBUG)*.exe
-	$(CLEANUP) $(PATH_DEBUG)*.out
-	$(CLEANUP) $(PATH_DEBUG)$(REL_SUBDIR)*.a
-	$(CLEANUP) $(PATH_DEBUG)$(REL_SUBDIR)*.lib
-	$(CLEANUP) $(PATH_DEBUG)*.bin
-	$(CLEANUP) $(PATH_DEBUG)*.hex
+	$(CLEANUP) -rf $(PATH_RELEASE)
+	$(CLEANUP) -rf $(PATH_DEBUG)
 	$(CLEANUP) $(PATH_BUILD)*.su
-	$(CLEANUP) $(PATH_OBJECT_FILES)*.su
-	$(CLEANUP) $(PATH_DEBUG)*.su
-	$(CLEANUP) $(PATH_RELEASE)*.su
 	@echo
 
 .PRECIOUS: $(PATH_RESULTS)%.txt
