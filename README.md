@@ -49,8 +49,8 @@ In the near future, I will place the various build artifacts produced here into 
 TODO
 ### Memory Comparisons
 View the markdown file example comparisons below. Note that the specific numbers for your target may differ, but the information is nonetheless useful.
-- Windows Build: [`Benchmark_MemCmpTbl_Windows.md`](./Benchmark_MemCmpTbl_Windows.md)
-- Arm Cortex-M0+: [`Benchmark_MemCmpTbl_ArmCortexM0Plus.md`](./Benchmark_MemCmpTbl_ArmCortexM0Plus.md)
+- Windows Build: [`Benchmark_MemStats_Windows.md`](./Benchmark_MemStats_Windows.md)
+- Arm Cortex-M0+: [`Benchmark_MemStats_ArmCortexM0Plus.md`](./Benchmark_MemStats_ArmCortexM0Plus.md)
 
 ### Speed Comparison
 
