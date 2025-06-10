@@ -292,31 +292,33 @@ libwx86-64-full-bp-nolut:
 
 memstats-arm-all:
 	@echo -e "\033[35mMCU mem stats 1\033[0m (defaults)..."
-	@$(MAKE) --always-make memstats-arm-lazy MEMSTATS_TO_FILE=1
+	@$(MAKE) --always-make memstats-arm-lazy MEMSTATS_TO_FILE=1 > /dev/null
 	@echo -e "\033[35mMCU mem stats 2\033[0m (nums only, default spacing)..."
-	@$(MAKE) --always-make memstats-arm-nums MEMSTATS_TO_FILE=1
+	@$(MAKE) --always-make memstats-arm-nums MEMSTATS_TO_FILE=1 > /dev/null
 	@echo -e "\033[35mMCU mem stats 3\033[0m (nums+err, default spacing)..."
-	@$(MAKE) --always-make memstats-arm-numerr MEMSTATS_TO_FILE=1
+	@$(MAKE) --always-make memstats-arm-numerr MEMSTATS_TO_FILE=1 > /dev/null
 	@echo -e "\033[35mMCU mem stats 4\033[0m (full rng, default spacing)..."
-	@$(MAKE) --always-make memstats-arm-full MEMSTATS_TO_FILE=1
+	@$(MAKE) --always-make memstats-arm-full MEMSTATS_TO_FILE=1 > /dev/null
 	@echo -e "\033[35mMCU mem stats 5\033[0m (nums only, bit-packed)..."
-	@$(MAKE) --always-make memstats-arm-nums-bp MEMSTATS_TO_FILE=1
+	@$(MAKE) --always-make memstats-arm-nums-bp MEMSTATS_TO_FILE=1 > /dev/null
 	@echo -e "\033[35mMCU mem stats 6\033[0m (nums+err, default spacing)..."
-	@$(MAKE) --always-make memstats-arm-numerr-bp MEMSTATS_TO_FILE=1
+	@$(MAKE) --always-make memstats-arm-numerr-bp MEMSTATS_TO_FILE=1 > /dev/null
 	@echo -e "\033[35mMCU mem stats 7\033[0m (full rng, default spacing)..."
-	@$(MAKE) --always-make memstats-arm-full-bp MEMSTATS_TO_FILE=1
+	@$(MAKE) --always-make memstats-arm-full-bp MEMSTATS_TO_FILE=1 > /dev/null
 	@echo -e "\033[35mMCU mem stats 8\033[0m (nums only, default spacing, no lut)..."
-	@$(MAKE) --always-make memstats-arm-nums-nolut MEMSTATS_TO_FILE=1
+	@$(MAKE) --always-make memstats-arm-nums-nolut MEMSTATS_TO_FILE=1 > /dev/null
 	@echo -e "\033[35mMCU mem stats 9\033[0m (nums+err, default spacing, no lut)..."
-	@$(MAKE) --always-make memstats-arm-numerr-nolut MEMSTATS_TO_FILE=1
+	@$(MAKE) --always-make memstats-arm-numerr-nolut MEMSTATS_TO_FILE=1 > /dev/null
 	@echo -e "\033[35mMCU mem stats 10\033[0m (full rng, default spacing, no lut)..."
-	@$(MAKE) --always-make memstats-arm-full-nolut MEMSTATS_TO_FILE=1
+	@$(MAKE) --always-make memstats-arm-full-nolut MEMSTATS_TO_FILE=1 > /dev/null
 	@echo -e "\033[35mMCU mem stats 11\033[0m (nums only, bit packed, no lut)..."
-	@$(MAKE) --always-make memstats-arm-nums-bp-nolut MEMSTATS_TO_FILE=1
+	@$(MAKE) --always-make memstats-arm-nums-bp-nolut MEMSTATS_TO_FILE=1 > /dev/null
 	@echo -e "\033[35mMCU mem stats 12\033[0m (nums+err, bit packed, no lut)..."
-	@$(MAKE) --always-make memstats-arm-numerr-bp-nolut MEMSTATS_TO_FILE=1
+	@$(MAKE) --always-make memstats-arm-numerr-bp-nolut MEMSTATS_TO_FILE=1 > /dev/null
 	@echo -e "\033[35mMCU mem stats 13\033[0m (full rng, bit packed, no lut)..."
-	@$(MAKE) --always-make memstats-arm-full-bp-nolut MEMSTATS_TO_FILE=1
+	@$(MAKE) --always-make memstats-arm-full-bp-nolut MEMSTATS_TO_FILE=1 > /dev/null
+	@echo -e "\033[32;1mAll done!\033[0m"
+	python scripts/mem_cmp_table.py
 	@echo -e "\033[32;1mAll done!\033[0m"
 
 memstats-arm-nums:

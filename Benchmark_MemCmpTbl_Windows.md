@@ -1,6 +1,6 @@
 # Memory Usage Comparison
 
-## Memory Section Sizes (Ascending Order of Total Size)
+## Memory Section Sizes in Bytes (Ascending Order of Total Size)
 
 | Configuration | Text | Data | BSS | Total |
 |--------------|-----:|-----:|----:|------:|
@@ -18,7 +18,7 @@
 | wx86-64-numerr-bp-nolut | 4496 | 0 | 192 | 4688 |
 | wx86-64-numerr-nolut | 4512 | 0 | 192 | 4704 |
 
-## Symbol Sizes (Same Order as Above)
+## Symbol Sizes in Bytes (Same Order as Above)
 
 | Configuration | Ascii7Seg_ConvertChar | Ascii7Seg_ConvertChar.part.0 | Ascii7Seg_ConvertNum | Ascii7Seg_ConvertWord | Ascii7Seg_IsSupportedChar | ErrorLUT.0 | MasterLUT | NumLUT | PowersOf10 |
 |--------------|-----:|-----:|-----:|-----:|-----:|-----:|-----:|-----:|-----:|
