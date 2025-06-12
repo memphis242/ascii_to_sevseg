@@ -18,7 +18,11 @@
 #include "speed_test.h"
 
 /* Local Macro Definitions */
+
+//! Number of test cycle iterations for RUN_TEST to do
 #define TEST_ITERATIONS 100
+
+//! Macro function to run a test, including all the TEST_ITERATIONS cycles
 #define RUN_TEST(f)                                                            \
    uint32_t tmr_start = 0;                                                     \
    uint32_t tmr_end = 0;                                                       \
@@ -48,17 +52,22 @@
 
 /* Local Variables */
 
-/* Forward Function Declarations */
+/* Extern Function Declarations */
 
-void MCUSetup(void);
+extern void MCUSetup(void);
 
-void FcnTester_Ascii7Seg_ConvertChar(void);
-void FcnTester_Ascii7Seg_ConvertWord(void);
-void FcnTester_Ascii7Seg_ConvertNum(void);
-void FcnTester_Ascii7Seg_IsSupportedChar(void);
+/* Local Function Declarations */
+
+static void FcnTester_Ascii7Seg_ConvertChar(void);
+static void FcnTester_Ascii7Seg_ConvertWord(void);
+static void FcnTester_Ascii7Seg_ConvertNum(void);
+static void FcnTester_Ascii7Seg_IsSupportedChar(void);
 
 /* Meat of the Program */
 
+/**
+ * @brief main function for running all the tests and reporting the data
+ */
 int main(void)
 {
    MCUSetup();
@@ -76,5 +85,46 @@ int main(void)
 
       SpeedTest_WaitForStartSignal();
       RUN_TEST(FcnTester_Ascii7Seg_IsSupportedChar);
+   }
+}
+
+/* Local Function Definitions */
+
+static void FcnTester_Ascii7Seg_ConvertChar(void)
+{
+   union Ascii7Seg_Encoding_U buf;
+   for ( int16_t c = CHAR_MIN; c <= CHAR_MAX; c++ )
+   {
+      (void)Ascii7Seg_ConvertChar((char)c, &buf);
+   }
+}
+
+static void FcnTester_Ascii7Seg_ConvertWord(void)
+{
+   union Ascii7Seg_Encoding_U buf[20];
+   (void)Ascii7Seg_ConvertWord("ERROR", 20, buf);
+   (void)Ascii7Seg_ConvertWord("error", 20, buf);
+   (void)Ascii7Seg_ConvertWord("SUCCESS", 20, buf);
+   (void)Ascii7Seg_ConvertWord("success", 20, buf);
+   (void)Ascii7Seg_ConvertWord("FAIL", 20, buf);
+   (void)Ascii7Seg_ConvertWord("fail", 20, buf);
+   (void)Ascii7Seg_ConvertWord("HELLO WORLD!", 20, buf);
+   (void)Ascii7Seg_ConvertWord("hello world!", 20, buf);
+}
+
+static void FcnTester_Ascii7Seg_ConvertNum(void)
+{
+   union Ascii7Seg_Encoding_U buf[3];
+   for ( uint16_t i = 100; i < 1000; i++ )
+   {
+      (void)Ascii7Seg_ConvertNum(i, buf, 3);
+   }
+}
+
+static void FcnTester_Ascii7Seg_IsSupportedChar(void)
+{
+   for ( int16_t c = CHAR_MIN; c <= CHAR_MAX; c++ )
+   {
+      (void)Ascii7Seg_IsSupportedChar((char)c);
    }
 }
