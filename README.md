@@ -1,14 +1,19 @@
 # ASCII to 7-Segment Library `libascii7seg` :capital_abcd: :1234:
-This library provides a small API to encode a range of supported ASCII characters into the individual segment values that the downstream can then use to drive a [7-segment display](https://en.wikipedia.org/wiki/Seven-segment_display). This can be used in pretty much any environment and is written conforming to C99.  
+This library provides a small API to encode a range of supported ASCII characters, as well as (up to) 64-bit integers, into the individual 7-segment values that the downstream can then use to drive a [7-segment display](https://en.wikipedia.org/wiki/Seven-segment_display). This can be used in pretty much any environment and is written conformant to C99.  
 
 See [`ascii7seg.h`](./inc/ascii7seg.h) for the types and API, but to repeat them briefly here, the primary type you'll work with is `Ascii7Seg_Encoding_U` (a union type), which will give you the individual segment values or the entire encoding as a single variable (hence the union type), and the following API is available to you:   
 
 ```c
-bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf );
+bool Ascii7Seg_ConvertChar( char ascii_char,
+                            union Ascii7Seg_Encoding_U * buf );
 
 size_t Ascii7Seg_ConvertWord( const char * str,
                               size_t str_len,
                               union Ascii7Seg_Encoding_U * buf );
+
+bool Ascii7Seg_ConvertNum( int64_t num,
+                           union Ascii7Seg_Encoding_U * buf,
+                           size_t buf_len );
 
 bool Ascii7Seg_IsSupportedChar( char ascii_char );
 ```
@@ -31,7 +36,7 @@ In addition, the internal implementation of the encoding is _optionally_ configu
 
 You'd simply set the macros as you like and then rebuild the library for your architecture. The idea behind this flexibility is to allow you, the user, to prioritize speed vs space. Again, this is _optional_ and by default, speed is prioritized (lookup tables are used and the encoding is _not_ bit-packed) for the full range of conceivable ASCII characters on a 7-segment display.
 
-## Usage
+## Bring Into Your Project
 In the near future, I will place the various build artifacts produced here into a package and publish that to some package management system that you can then conveniently pull in, but for now, you may:
 1. **Download** the static library file for your target in the [**Releases**](https://github.com/memphis242/ascii7seg/releases) page of this repository. I try to include as many possible target environments as I can there, but this is not exhaustive.
 

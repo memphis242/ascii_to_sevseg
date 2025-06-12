@@ -135,7 +135,8 @@ extern "C" {
  * 
  * @return true if the conversion was successful; false otherwise.
  */
-bool Ascii7Seg_ConvertChar( char ascii_char, union Ascii7Seg_Encoding_U * buf );
+bool Ascii7Seg_ConvertChar( char ascii_char,
+                            union Ascii7Seg_Encoding_U * buf );
 
 /**
  * @brief Converts an ASCII string to its 7-segment display encoding.
@@ -166,7 +167,7 @@ size_t Ascii7Seg_ConvertWord( const char * str,
  * This function takes a 64-bit signed integer and converts it into its
  * corresponding 7-segment ASCII encoding, using the minimum number of digits
  * needed, up to 20 characters for the maximum representable 64-bit integer
- * (including the negative sign).
+ * (including the negative sign), or until buf_len is hit.
  * 
  * @note The digits are placed most-significant digit first. For example,
  *       10,503 gets placed into the buffer as the encoding versions of
