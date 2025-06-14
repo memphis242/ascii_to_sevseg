@@ -10,7 +10,9 @@
 #ifndef UART_MSG_LIST_H
 #define UART_MSG_LIST_H
 
-//           Msg Enum               Msg Header     # of Data Bytes
-UART_MSG_RX( SpeedTestStartCmd,     0x01,          0                 )
+//           Msg Enum               Msg Header
+UART_MSG_RX( SpeedTestStartCmd,     0x01        )
+
+UART_MSG_TX( SpeedTestLogData,      0x10        )
 
 #endif // UART_MSG_LIST_H

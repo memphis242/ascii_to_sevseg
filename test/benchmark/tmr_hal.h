@@ -18,6 +18,7 @@
 #include <stdint.h>
 
 /* Public Macro Definitions */
+#define TMR_TICKS_TO_US    1  // 1us per timer tick
 
 /* Public Datatypes */
 

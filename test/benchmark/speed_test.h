@@ -13,6 +13,7 @@
 /* File Inclusions */
 #include <stdbool.h>
 #include <stdint.h>
+#include "tmr_hal.h"
 
 /* Public Macro Definitions */
 #define SPEED_TEST_TIMER_COUNTS_TO_US(elapsed_time)  \

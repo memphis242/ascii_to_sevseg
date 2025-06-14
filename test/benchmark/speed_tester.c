@@ -16,19 +16,17 @@
 #include "ascii7seg.h"
 #include "ascii7seg_config.h"
 #include "speed_test.h"
+#include "speed_test_cfg.h"
 
 /* Local Macro Definitions */
 
-//! Number of test cycle iterations for RUN_TEST to do
-#define TEST_ITERATIONS 100
-
-//! Macro function to run a test, including all the TEST_ITERATIONS cycles
+//! Macro function to run a test, including all the fcn tester cycles
 #define RUN_TEST(f)                                                            \
    uint32_t tmr_start = 0;                                                     \
    uint32_t tmr_end = 0;                                                       \
    uint32_t elapsed_time = 0;                                                  \
    SpeedTest_Arm();                                                            \
-   for ( size_t i = 0; i < TEST_ITERATIONS; i++ )                              \
+   for ( size_t i = 0; i < SPEED_TEST_ITERATIONS_PER_FCN_TESTER; i++ )         \
    {                                                                           \
       tmr_start = SpeedTest_GetTimerVal();                                     \
       f();                                                                     \

@@ -32,7 +32,8 @@ struct HalUart_MsgData_S
    size_t len;
 };
 
-#define UART_MSG_RX(enum, id, num)  enum,
+#define UART_MSG_RX(enum, id)  enum,
+#define UART_MSG_TX(enum, id)
 
 enum HalUart_RxMsg_E
 {
@@ -41,6 +42,19 @@ enum HalUart_RxMsg_E
 };
 
 #undef UART_MSG_RX
+#undef UART_MSG_TX
+
+#define UART_MSG_RX(enum, id)
+#define UART_MSG_TX(enum, id)  enum,
+
+enum HalUart_RxMsg_E
+{
+#include "uart_msg_list.h"
+   NUM_OF_UART_TX_MSGS
+};
+
+#undef UART_MSG_RX
+#undef UART_MSG_TX
 
 typedef void (*HalUart_RxMsgCB_F)(struct HalUart_DataBuf_S *);
 
