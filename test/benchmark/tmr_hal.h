@@ -1,5 +1,5 @@
 /**
- * @file mcu_tmr_hal.h
+ * @file tmr_hal.h
  * @brief HAL API for a µC's general-purpose 32-bit timer.
  * @note If a µC doesn't have a general-purpose 32-bit timer, then either a
  *       single 16-bit timer shall be used, type-cast to 32-bit one, or two

@@ -71,6 +71,7 @@ static void FcnTester_Ascii7Seg_IsSupportedChar(void);
 int main(void)
 {
    MCUSetup();
+   SpeedTest_Init();
 
    while(1)
    {

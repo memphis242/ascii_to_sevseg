@@ -7,8 +7,8 @@
  * @copyright MIT License
  */
 
-#ifndef SPEED_TEST_H_
-#define SPEED_TEST_H_
+#ifndef SPEED_TEST_H
+#define SPEED_TEST_H
 
 /* File Inclusions */
 #include <stdbool.h>
@@ -26,6 +26,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * @brief Initializes the SpeedTest module (should be done prior to any usage)
+ */
+void SpeedTest_Init(void);
 
 /**
  * @brief Sets the SpeedTest ready for a fresh logging session
@@ -75,4 +80,4 @@ void SpeedTest_WaitForStartSignal(void);
 }
 #endif
 
-#endif // SPEED_TEST_H_
+#endif // SPEED_TEST_H
